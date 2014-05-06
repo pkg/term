@@ -1,8 +1,6 @@
-use 'godoc cmd//target' for documentation on the /target command 
-
 
 # term
-    import "."
+    import "github.com/pkg/term"
 
 Package term manages POSIX terminals. As POSIX terminals are connected to, or emulate,
 a UART, this package provides control over the various UART and serial line parameters.
