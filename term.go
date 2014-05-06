@@ -3,6 +3,7 @@
 package term
 
 import (
+	"io"
 	"os"
 	"syscall"
 	"unsafe"
@@ -10,7 +11,8 @@ import (
 
 // Term represents an asynchronous communications port.
 type Term struct {
-	fd int
+	name string
+	fd   int
 }
 
 // Open opens an asynchronous communications port.
@@ -19,21 +21,41 @@ func Open(name string) (*Term, error) {
 	if e != nil {
 		return nil, &os.PathError{"open", name, e}
 	}
-	return &Term{fd: fd}, nil
+	return &Term{name: name, fd: fd}, nil
 }
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
 // bytes read and an error, if any. EOF is signaled by a zero count with
 // err set to io.EOF.
 func (t *Term) Read(b []byte) (int, error) {
-	return syscall.Read(t.fd, b)
+	n, e := syscall.Read(t.fd, b)
+	if n < 0 {
+		n = 0
+	}
+	if n == 0 && len(b) > 0 && e == nil {
+		return 0, io.EOF
+	}
+	if e != nil {
+		return n, &os.PathError{"read", t.name, e}
+	}
+	return n, nil
 }
 
 // Write writes len(b) bytes to the terminal. It returns the number of bytes
 // written and an error, if any. Write returns a non-nil error when n !=
 // len(b).
 func (t *Term) Write(b []byte) (int, error) {
-	return syscall.Write(t.fd, b)
+	n, e := syscall.Write(t.fd, b)
+	if n < 0 {
+		n = 0
+	}
+	if n != len(b) {
+		return n, io.ErrShortWrite
+	}
+	if e != nil {
+		return n, &os.PathError{"write", t.name, e}
+	}
+	return n, nil
 }
 
 // Close releases any associated resources.
@@ -62,64 +84,35 @@ func (t *Term) SetSpeed(baud int) error {
 	return t.tcsetattr(attr)
 }
 
-func (t *Term) tcgetattr() (*syscall.Termios, error) {
-	var termios syscall.Termios
-	if err := t.ioctl(syscall.TCGETS, &termios); err != nil {
-		return nil, err
-	}
-	return &termios, nil
-}
-
-func (t *Term) tcsetattr(attr *syscall.Termios) error {
-	return t.ioctl(syscall.TCSETS, attr)
-}
-
-func (t *Term) ioctl(op uintptr, p *syscall.Termios) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), op, uintptr(unsafe.Pointer(p)), 0, 0, 0); e != 0 {
+// Flush flushes both data received but not read, and data written but not transmitted.
+func (t *Term) Flush() error {
+	const TCFLSH = 0x540B
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), TCFLSH, syscall.TCIOFLUSH, 0, 0, 0); e != 0 {
 		return e
 	}
 	return nil
 }
 
-func cfsetspeed(attr *syscall.Termios, baud int) {
-	var bauds = map[int]uint32{
-		50:      syscall.B50,
-		75:      syscall.B75,
-		110:     syscall.B110,
-		134:     syscall.B134,
-		150:     syscall.B150,
-		200:     syscall.B200,
-		300:     syscall.B300,
-		600:     syscall.B600,
-		1200:    syscall.B1200,
-		1800:    syscall.B1800,
-		2400:    syscall.B2400,
-		4800:    syscall.B4800,
-		9600:    syscall.B9600,
-		19200:   syscall.B19200,
-		38400:   syscall.B38400,
-		57600:   syscall.B57600,
-		115200:  syscall.B115200,
-		230400:  syscall.B230400,
-		460800:  syscall.B460800,
-		500000:  syscall.B500000,
-		576000:  syscall.B576000,
-		921600:  syscall.B921600,
-		1000000: syscall.B1000000,
-		1152000: syscall.B1152000,
-		1500000: syscall.B1500000,
-		2000000: syscall.B2000000,
-		2500000: syscall.B2500000,
-		3000000: syscall.B3000000,
-		3500000: syscall.B3500000,
-		4000000: syscall.B4000000,
+// SendBreak sends a break signal.
+func (t *Term) SendBreak() error {
+	const TCSBRK = 0x5409 // not POSIX TCSBRKP
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), TCSBRK, 0, 0, 0, 0); e != 0 {
+		return e
 	}
+	return nil
+}
 
-	rate := bauds[baud]
-	if rate == 0 {
-		return
+func (t *Term) tcgetattr() (*syscall.Termios, error) {
+	var attr syscall.Termios
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCGETS, uintptr(unsafe.Pointer(&attr)), 0, 0, 0); e != 0 {
+		return nil, e
 	}
-	attr.Cflag = syscall.CS8 | syscall.CREAD | syscall.CLOCAL | rate
-	attr.Ispeed = rate
-	attr.Ospeed = rate
+	return &attr, nil
+}
+
+func (t *Term) tcsetattr(attr *syscall.Termios) error {
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCSETS, uintptr(unsafe.Pointer(attr)), 0, 0, 0); e != 0 {
+		return e
+	}
+	return nil
 }
