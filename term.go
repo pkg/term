@@ -65,15 +65,6 @@ func (t *Term) Close() error {
 	return err
 }
 
-// Speed returns the current input and output baud rates for device.
-func (t *Term) Speed() (int, int, error) {
-	termios, err := t.tcgetattr()
-	if err != nil {
-		return -1, -1, err
-	}
-	return int(termios.Ispeed), int(termios.Ospeed), nil
-}
-
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
 	attr, err := t.tcgetattr()
