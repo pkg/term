@@ -2,6 +2,21 @@ package term
 
 import "syscall"
 
+func (t *Term) tcgetattr() (*syscall.Termios, error) {
+	var attr syscall.Termios
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCGETS, uintptr(unsafe.Pointer(&attr)), 0, 0, 0); e != 0 {
+		return nil, e
+	}
+	return &attr, nil
+}
+
+func (t *Term) tcsetattr(attr *syscall.Termios) error {
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCSETS, uintptr(unsafe.Pointer(attr)), 0, 0, 0); e != 0 {
+		return e
+	}
+	return nil
+}
+
 func cfsetspeed(attr *syscall.Termios, baud int) {
 	var rates = map[int]uint32{
 		50:      syscall.B50,
