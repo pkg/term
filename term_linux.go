@@ -1,6 +1,9 @@
 package term
 
-import "syscall"
+import (
+	"syscall"
+	"unsafe"
+)
 
 func (t *Term) tcgetattr() (*syscall.Termios, error) {
 	var attr syscall.Termios
