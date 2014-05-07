@@ -5,13 +5,13 @@ import "flag"
 
 var tty = flag.String("tty", "/dev/ttyUSB0", "the terminal device to use for testing")
 
-func TestTermSpeed(t *testing.T) {
-	tt, err := Open(*tty)
+func TestTermAttr(t *testing.T) {
+	tt, err := Open("/dev/tty")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer tt.Close()
-	t.Log(tt.Speed())
+	t.Log(tt.tcgetattr())
 }
 
 func TestTermSetSpeed(t *testing.T) {
@@ -23,5 +23,4 @@ func TestTermSetSpeed(t *testing.T) {
 	if err := tt.SetSpeed(57600); err != nil {
 		t.Fatal(err)
 	}
-	t.Log(tt.Speed())
 }

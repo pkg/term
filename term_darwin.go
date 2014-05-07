@@ -5,22 +5,24 @@ import (
 	"unsafe"
 )
 
-func (t *Term) tcgetattr() (*syscall.Termios, error) {
-	var attr syscall.Termios
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCGETA, uintptr(unsafe.Pointer(&attr)), 0, 0, 0); e != 0 {
-		return nil, e
+type attr syscall.Termios
+
+func (t *Term) tcgetattr() (attr, error) {
+	var a attr
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCGETA, uintptr(unsafe.Pointer(&a)), 0, 0, 0); e != 0 {
+		return a, e
 	}
-	return &attr, nil
+	return a, nil
 }
 
-func (t *Term) tcsetattr(attr *syscall.Termios) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCSETA, uintptr(unsafe.Pointer(attr)), 0, 0, 0); e != 0 {
+func (t *Term) tcsetattr(a attr) error {
+	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCSETA, uintptr(unsafe.Pointer(&a)), 0, 0, 0); e != 0 {
 		return e
 	}
 	return nil
 }
 
-func cfsetspeed(attr *syscall.Termios, baud int) {
+func (a *attr) setSpeed(baud int) {
 	var rates = map[int]uint64{
 		50:     syscall.B50,
 		75:     syscall.B75,
@@ -46,7 +48,7 @@ func cfsetspeed(attr *syscall.Termios, baud int) {
 	if rate == 0 {
 		return
 	}
-	attr.Cflag = syscall.CS8 | syscall.CREAD | syscall.CLOCAL | rate
-	attr.Ispeed = rate
-	attr.Ospeed = rate
+	(*syscall.Termios)(a).Cflag = syscall.CS8 | syscall.CREAD | syscall.CLOCAL | rate
+	(*syscall.Termios)(a).Ispeed = rate
+	(*syscall.Termios)(a).Ospeed = rate
 }

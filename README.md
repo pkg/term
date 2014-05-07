@@ -78,14 +78,6 @@ SetSpeed sets the receive and transmit baud rates.
 
 
 
-### func (\*Term) Speed
-``` go
-func (t *Term) Speed() (int, int, error)
-```
-Speed returns the current input and output baud rates for device.
-
-
-
 ### func (\*Term) Write
 ``` go
 func (t *Term) Write(b []byte) (int, error)
