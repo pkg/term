@@ -6,7 +6,7 @@ import (
 )
 
 // Reset an Arduino by toggling the DTR signal.
-func ExampleStatus_SetDTR() {
+func ExampleTerm_SetDTR() {
 	t, _ := Open("/dev/USB0")
 
 	t.SetDTR(false)
