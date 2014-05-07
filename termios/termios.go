@@ -25,6 +25,16 @@ func Tiocmset(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMSET, uintptr(unsafe.Pointer(status)))
 }
 
+// Tiocmbis sets the indicated modem bits.
+func Tiocmbis(fd uintptr, status *int) error {
+	return ioctl(fd, syscall.TIOCMBIS, uintptr(unsafe.Pointer(status)))
+}
+
+// Tiocmbic clears the indicated modem bits.
+func Tiocmbic(fd uintptr, status *int) error {
+	return ioctl(fd, syscall.TIOCMBIC, uintptr(unsafe.Pointer(status)))
+}
+
 // Cfgetispeed returns the input baud rate stored in the termios structure.
 func Cfgetispeed(attr *syscall.Termios) uint32 { return attr.Ispeed }
 

@@ -75,6 +75,26 @@ func TestTiocmset(t *testing.T) {
 	}
 }
 
+func TestTiocmbis(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	status := 0
+	if err := Tiocmbis(f.Fd(), &status); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTiocmbic(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	status := 0
+	if err := Tiocmbic(f.Fd(), &status); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCfgetispeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()

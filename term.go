@@ -87,31 +87,19 @@ func (t *Term) SendBreak() error {
 	return termios.Tcsendbreak(uintptr(t.fd), 0)
 }
 
-// Status represents the current "MODEM" status bits, which consist of all of the RS-232 signal lines except RXD and TXD.
-type Status int
-
 // SetDTR sets the DTR (data terminal ready) signal.
-func (s *Status) SetDTR(v bool) {
+func (t *Term) SetDTR(v bool) error {
+	bits := syscall.TIOCM_DTR
 	if v {
-		(*s) |= syscall.TIOCM_DTR
+		return termios.Tiocmbis(uintptr(t.fd), &bits)
 	} else {
-		(*s) &= ^syscall.TIOCM_DTR
+		return termios.Tiocmbic(uintptr(t.fd), &bits)
 	}
 }
 
 // DTR returns the state of the DTR (data terminal ready) signal.
-func (s *Status) DTR() bool { return (*s)&syscall.TIOCM_DTR == syscall.TIOCM_DTR }
-
-// Status returns the state of the "MODEM" bits.
-func (t *Term) Status() (Status, error) {
+func (t *Term) DTR() (bool, error) {
 	var status int
-	if err := termios.Tiocmget(uintptr(t.fd), &status); err != nil {
-		return 0, err
-	}
-	return Status(status), nil
-}
-
-// SetStatus sets the state of the "MODEM" bits.
-func (t *Term) SetStatus(status Status) error {
-	return termios.Tiocmset(uintptr(t.fd), (*int)(&status))
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_DTR == syscall.TIOCM_DTR, err
 }

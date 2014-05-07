@@ -12,38 +12,6 @@ UART and serial line parameters.
 
 
 
-## type Status
-``` go
-type Status int
-```
-Status represents the current "MODEM" status bits, which consist of all of the RS-232 signal lines except RXD and TXD.
-
-
-
-
-
-
-
-
-
-
-
-### func (\*Status) DTR
-``` go
-func (s *Status) DTR() bool
-```
-DTR returns the state of the DTR (data terminal ready) signal.
-
-
-
-### func (\*Status) SetDTR
-``` go
-func (s *Status) SetDTR(v bool)
-```
-SetDTR sets the DTR (data terminal ready) signal.
-
-
-
 ## type Term
 ``` go
 type Term struct {
@@ -77,6 +45,14 @@ Close closes the device and releases any associated resources.
 
 
 
+### func (\*Term) DTR
+``` go
+func (t *Term) DTR() (bool, error)
+```
+DTR returns the state of the DTR (data terminal ready) signal.
+
+
+
 ### func (\*Term) Flush
 ``` go
 func (t *Term) Flush() error
@@ -103,27 +79,19 @@ SendBreak sends a break signal.
 
 
 
+### func (\*Term) SetDTR
+``` go
+func (t *Term) SetDTR(v bool) error
+```
+SetDTR sets the DTR (data terminal ready) signal.
+
+
+
 ### func (\*Term) SetSpeed
 ``` go
 func (t *Term) SetSpeed(baud int) error
 ```
 SetSpeed sets the receive and transmit baud rates.
-
-
-
-### func (\*Term) SetStatus
-``` go
-func (t *Term) SetStatus(status Status) error
-```
-SetStatus sets the state of the "MODEM" bits.
-
-
-
-### func (\*Term) Status
-``` go
-func (t *Term) Status() (Status, error)
-```
-Status returns the state of the "MODEM" bits.
 
 
 

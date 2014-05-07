@@ -9,14 +9,11 @@ import (
 func ExampleStatus_SetDTR() {
 	t, _ := Open("/dev/USB0")
 
-	status, _ := t.Status()
-	status.SetDTR(!status.DTR())
-	t.SetStatus(status)
+	t.SetDTR(false)
 
 	time.Sleep(1 * time.Second)
 
-	status.SetDTR(!status.DTR())
-	t.SetStatus(status)
+	t.SetDTR(true)
 }
 
 // Send Break to the remote DTE.
