@@ -1,11 +1,6 @@
 package term
 
-import (
-	"syscall"
-	"unsafe"
-
-	"github.com/pkg/term/termios"
-)
+import "syscall"
 
 type attr syscall.Termios
 

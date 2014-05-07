@@ -1,9 +1,6 @@
 package term
 
-import (
-	"syscall"
-	"unsafe"
-)
+import "syscall"
 
 type attr syscall.Termios
 

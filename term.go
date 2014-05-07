@@ -8,6 +8,8 @@ import (
 	"os"
 	"syscall"
 	"unsafe"
+
+	"github.com/pkg/term/termios"
 )
 
 // Term represents an asynchronous communications port.
@@ -68,30 +70,22 @@ func (t *Term) Close() error {
 
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
-	attr, err := t.tcgetattr()
-	if err != nil {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
 		return err
 	}
-	attr.setSpeed(baud)
-	return t.tcsetattr(attr)
+	a.setSpeed(baud)
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
 // Flush flushes both data received but not read, and data written but not transmitted.
 func (t *Term) Flush() error {
-	const TCFLSH = 0x540B
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), TCFLSH, syscall.TCIOFLUSH, 0, 0, 0); e != 0 {
-		return e
-	}
-	return nil
+	return termios.Tcflush(uintptr(t.fd), termios.TCIOFLUSH)
 }
 
 // SendBreak sends a break signal.
 func (t *Term) SendBreak() error {
-	const TCSBRK = 0x5409 // not POSIX TCSBRKP
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), TCSBRK, 0, 0, 0, 0); e != 0 {
-		return e
-	}
-	return nil
+	return termios.Tcsendbreak(uintptr(t.fd), 0)
 }
 
 // Status represents the current "MODEM" status bits, which consist of all of the RS-232 signal lines except RXD and TXD.
