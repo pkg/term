@@ -67,3 +67,9 @@ func Tcflush(fd, which uintptr) error {
 	}
 	return ioctl(fd, syscall.TCIOFLUSH, uintptr(unsafe.Pointer(&com)))
 }
+
+// Cfgetispeed returns the input baud rate stored in the termios structure.
+func Cfgetispeed(attr *syscall.Termios) uint64 { return attr.Ispeed }
+
+// Cfgetospeed returns the output baud rate stored in the termios structure.
+func Cfgetospeed(attr *syscall.Termios) uint64 { return attr.Ospeed }
