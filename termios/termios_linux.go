@@ -9,9 +9,9 @@ const (
 	TCSETS  = 0x5402
 	TCSETSW = 0x5403
 	TCSETSF = 0x5404
-        TCFLSH  = 0x540B
-        TCSBRK  = 0x5409
-        TCSBRKP = 0x5425
+	TCFLSH  = 0x540B
+	TCSBRK  = 0x5409
+	TCSBRKP = 0x5425
 
 	TCIFLUSH  = 0
 	TCOFLUSH  = 1
