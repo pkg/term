@@ -5,6 +5,7 @@ package termios
 
 import (
 	"syscall"
+	"unsafe"
 )
 
 func ioctl(fd, request, argp uintptr) error {
@@ -12,4 +13,14 @@ func ioctl(fd, request, argp uintptr) error {
 		return e
 	}
 	return nil
+}
+
+// Tiocmget returns the state of the MODEM bits.
+func Tiocmget(fd uintptr, status *int) error {
+	return ioctl(fd, syscall.TIOCMGET, uintptr(unsafe.Pointer(status)))
+}
+
+// Tiocmset sets the state of the MODEM bits.
+func Tiocmset(fd uintptr, status *int) error {
+	return ioctl(fd, syscall.TIOCMSET, uintptr(unsafe.Pointer(status)))
 }

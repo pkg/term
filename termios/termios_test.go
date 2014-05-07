@@ -60,3 +60,32 @@ func TestTcdrain(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestTiocmget(t *testing.T) {
+	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var status int
+	if err := Tiocmget(f.Fd(), &status); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTiocmset(t *testing.T) {
+	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var status int
+	if err := Tiocmget(f.Fd(), &status); err != nil {
+		t.Fatal(err)
+	}
+	if err := Tiocmset(f.Fd(), &status); err != nil {
+		t.Fatal(err)
+	}
+}

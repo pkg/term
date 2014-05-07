@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"syscall"
-	"unsafe"
 
 	"github.com/pkg/term/termios"
 )
@@ -106,16 +105,13 @@ func (s *Status) DTR() bool { return (*s)&syscall.TIOCM_DTR == syscall.TIOCM_DTR
 // Status returns the state of the "MODEM" bits.
 func (t *Term) Status() (Status, error) {
 	var status int
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCMGET, uintptr(unsafe.Pointer(&status)), 0, 0, 0); e != 0 {
-		return 0, e
+	if err := termios.Tiocmget(uintptr(t.fd), &status); err != nil {
+		return 0, err
 	}
 	return Status(status), nil
 }
 
 // SetStatus sets the state of the "MODEM" bits.
 func (t *Term) SetStatus(status Status) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TIOCMSET, uintptr(unsafe.Pointer(&status)), 0, 0, 0); e != 0 {
-		return e
-	}
-	return nil
+	return termios.Tiocmset(uintptr(t.fd), (*int)(&status))
 }
