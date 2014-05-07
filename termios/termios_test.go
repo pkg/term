@@ -30,7 +30,7 @@ func TestTcsetattr(t *testing.T) {
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
-	for _, opt := range []int{TCSANOW, TCSADRAIN, TCSAFLUSH} {
+	for _, opt := range []uintptr{TCSANOW, TCSADRAIN, TCSAFLUSH} {
 		if err := Tcsetattr(f.Fd(), opt, &termios); err != nil {
 			t.Fatal(err)
 		}

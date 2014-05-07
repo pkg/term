@@ -22,12 +22,18 @@ func Tcgetattr(fd uintptr, argp *syscall.Termios) error {
 }
 
 // Tcsetattr sets the current serial port settings.
-func Tcsetattr(fd uintptr, action int, argp *syscall.Termios) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, fd, syscall.TIOCSETA, uintptr(unsafe.Pointer(argp)), 0, 0, 0); e != 0 {
-		return e
-
+func Tcsetattr(fd, opt uintptr, argp *syscall.Termios) error {
+	switch opt {
+	case TCSANOW:
+		opt = syscall.TIOCSETA
+	case TCSADRAIN:
+		opt = syscall.TIOCSETAW
+	case TCSAFLUSH:
+		opt = syscall.TCIOSETAF
+	default:
+		return syscall.EINVAL
 	}
-	return nil
+	return ioctl(fd, opt, uintptr(unsafe.Pointer(argp)))
 }
 
 // Tcsendbreak function transmits a continuous stream of zero-valued bits for

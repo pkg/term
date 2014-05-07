@@ -52,6 +52,16 @@ func Tcsendbreak(fd, duration uintptr) error {
 	return ioctl(fd, TCSBRKP, duration)
 }
 
+// Tcdrain waits until all output written to the object referred to by fd has been transmitted.
+func Tcdrain(fd uintptr) error {
+	// simulate drain with TCSADRAIN
+	var attr syscall.Termios
+	if err := Tcgetattr(fd, &attr); err != nil {
+		return err
+	}
+	return Tcsetattr(fd, TCSADRAIN, &attr)
+}
+
 // Tcflush discards data written to the object referred to by fd but not transmitted, or data received but not read, depending on the value of selector.
 func Tcflush(fd, selector uintptr) error {
 	return ioctl(fd, TCFLSH, selector)
