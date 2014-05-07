@@ -2,12 +2,37 @@
 # term
     import "github.com/pkg/term"
 
-Package term manages POSIX terminals. As POSIX terminals are connected to, or emulate,
-a UART, this package provides control over the various UART and serial line parameters.
+Package term manages POSIX terminals. As POSIX terminals are connected to,
+or emulate, a UART, this package also provides control over the various
+UART and serial line parameters.
 
 
 
 
+
+
+
+## type Status
+``` go
+type Status int
+```
+Status represents the current "MODEM" status bits, which consist of all of the RS-232 signal lines except RXD and TXD.
+
+
+
+
+
+
+
+
+
+
+
+### func (\*Status) SetDTR
+``` go
+func (s *Status) SetDTR(v bool)
+```
+SetDTR sets the DTR (data terminal ready) RS-232 control signal.
 
 
 
@@ -40,7 +65,7 @@ Open opens an asynchronous communications port.
 ``` go
 func (t *Term) Close() error
 ```
-Close releases any associated resources.
+Close closes the device and releases any associated resources.
 
 
 
@@ -75,6 +100,22 @@ SendBreak sends a break signal.
 func (t *Term) SetSpeed(baud int) error
 ```
 SetSpeed sets the receive and transmit baud rates.
+
+
+
+### func (\*Term) SetStatus
+``` go
+func (t *Term) SetStatus(status Status) error
+```
+SetStatus sets the state of the "MODEM" bits.
+
+
+
+### func (\*Term) Status
+``` go
+func (t *Term) Status() (Status, error)
+```
+Status returns the state of the "MODEM" bits.
 
 
 
