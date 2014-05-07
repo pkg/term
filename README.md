@@ -28,11 +28,19 @@ Status represents the current "MODEM" status bits, which consist of all of the R
 
 
 
+### func (\*Status) DTR
+``` go
+func (s *Status) DTR() bool
+```
+DTR returns the state of the DTR (data terminal ready) signal.
+
+
+
 ### func (\*Status) SetDTR
 ``` go
 func (s *Status) SetDTR(v bool)
 ```
-SetDTR sets the DTR (data terminal ready) RS-232 control signal.
+SetDTR sets the DTR (data terminal ready) signal.
 
 
 

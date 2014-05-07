@@ -97,7 +97,7 @@ func (t *Term) SendBreak() error {
 // Status represents the current "MODEM" status bits, which consist of all of the RS-232 signal lines except RXD and TXD.
 type Status int
 
-// SetDTR sets the DTR (data terminal ready) RS-232 control signal.
+// SetDTR sets the DTR (data terminal ready) signal.
 func (s *Status) SetDTR(v bool) {
 	if v {
 		(*s) |= syscall.TIOCM_DTR
@@ -105,6 +105,9 @@ func (s *Status) SetDTR(v bool) {
 		(*s) &= ^syscall.TIOCM_DTR
 	}
 }
+
+// DTR returns the state of the DTR (data terminal ready) signal.
+func (s *Status) DTR() bool { return (*s)&syscall.TIOCM_DTR == syscall.TIOCM_DTR }
 
 // Status returns the state of the "MODEM" bits.
 func (t *Term) Status() (Status, error) {
