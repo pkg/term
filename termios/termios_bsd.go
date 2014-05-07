@@ -11,9 +11,6 @@ import (
 const (
 	FREAD     = 0x0001
 	FWRITE    = 0x0002
-	TCSANOW   = 0 /* make change immediate */
-	TCSADRAIN = 1 /* drain output, then change */
-	TCSAFLUSH = 2
 )
 
 // Tcgetattr gets the current serial port settings.

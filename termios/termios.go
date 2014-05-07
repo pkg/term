@@ -8,6 +8,16 @@ import (
 	"unsafe"
 )
 
+const (
+        TCIFLUSH  = 0
+        TCOFLUSH  = 1
+        TCIOFLUSH = 2
+
+	TCSANOW   = 0
+	TCSADRAIN = 1
+	TCSAFLUSH = 2
+)
+
 func ioctl(fd, request, argp uintptr) error {
 	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, fd, request, argp, 0, 0, 0); e != 0 {
 		return e
