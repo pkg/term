@@ -5,6 +5,23 @@ import (
 	"unsafe"
 )
 
+const (
+	TCSETS  = 0x5402
+	TCSETSW = 0x5403
+	TCSETSF = 0x5404
+        TCFLSH  = 0x540B
+        TCSBRK  = 0x5409
+        TCSBRKP = 0x5425
+
+	TCIFLUSH  = 0
+	TCOFLUSH  = 1
+	TCIOFLUSH = 2
+
+	TCSANOW   = 0
+	TCSADRAIN = 1
+	TCSAFLUSH = 2
+)
+
 // Tcgetattr gets the current serial port settings.
 func Tcgetattr(fd uintptr, argp *syscall.Termios) error {
 	return ioctl(fd, syscall.TCGETS, uintptr(unsafe.Pointer(argp)))
