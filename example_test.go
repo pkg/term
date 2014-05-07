@@ -6,7 +6,12 @@ import (
 )
 
 // Reset an Arduino by lowering the DTR signal.
-func ExampleStatusSetDTR(t *Term) {
+func ExampleStatusSetDTR() {
+	t, err := Open("/dev/USB0")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer t.Close()
 	status, err := t.Status()
 	if err != nil {
 		log.Fatal(err)
