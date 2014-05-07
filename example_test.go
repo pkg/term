@@ -5,24 +5,15 @@ import (
 	"time"
 )
 
-// Reset an Arduino by lowering the DTR signal.
-func ExampleStatusSetDTR() {
-	t, err := Open("/dev/USB0")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer t.Close()
-	status, err := t.Status()
-	if err != nil {
-		log.Fatal(err)
-	}
+// Reset an Arduino by toggling the DTR signal.
+func ExampleStatus_SetDTR() {
+	t, _ := Open("/dev/USB0")
+	status, _ := t.Status()
 	status.SetDTR(false)
-	if err := t.SetStatus(status); err != nil {
-		log.Fatal(err)
-	}
+
+	t.SetStatus(status)
 	time.Sleep(1 * time.Second)
+
 	status.SetDTR(true)
-	if err := t.SetStatus(status); err != nil {
-		log.Fatal(err)
-	}
+	t.SetStatus(status)
 }
