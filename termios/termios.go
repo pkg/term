@@ -24,3 +24,9 @@ func Tiocmget(fd uintptr, status *int) error {
 func Tiocmset(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMSET, uintptr(unsafe.Pointer(status)))
 }
+
+// Cfgetispeed returns the input baud rate stored in the termios structure.
+func Cfgetispeed(attr *syscall.Termios) uint32 { return attr.Ispeed }
+
+// Cfgetospeed returns the output baud rate stored in the termios structure.
+func Cfgetospeed(attr *syscall.Termios) uint32 { return attr.Ospeed }

@@ -3,15 +3,20 @@ package term
 import "testing"
 import "flag"
 
-var tty = flag.String("tty", "/dev/ttyUSB0", "the terminal device to use for testing")
+var dev = flag.String("device", "/dev/tty", "device to use")
 
 func TestTermSetSpeed(t *testing.T) {
-	tt, err := Open(*tty)
-	if err != nil {
-		t.Fatal(err)
-	}
+	tt := opendev(t)
 	defer tt.Close()
 	if err := tt.SetSpeed(57600); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func opendev(t *testing.T) *Term {
+	tt, err := Open(*dev)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return tt
 }

@@ -1,16 +1,16 @@
 package termios
 
 import (
+	"flag"
 	"os"
 	"syscall"
 	"testing"
 )
 
+var dev = flag.String("device", "/dev/tty", "device to use")
+
 func TestTcgetattr(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	var termios syscall.Termios
@@ -20,10 +20,7 @@ func TestTcgetattr(t *testing.T) {
 }
 
 func TestTcsetattr(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	var termios syscall.Termios
@@ -38,10 +35,7 @@ func TestTcsetattr(t *testing.T) {
 }
 
 func TestTcsendbreak(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	if err := Tcsendbreak(f.Fd(), 0); err != nil {
@@ -50,10 +44,7 @@ func TestTcsendbreak(t *testing.T) {
 }
 
 func TestTcdrain(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	if err := Tcdrain(f.Fd()); err != nil {
@@ -62,10 +53,7 @@ func TestTcdrain(t *testing.T) {
 }
 
 func TestTiocmget(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	var status int
@@ -75,10 +63,7 @@ func TestTiocmget(t *testing.T) {
 }
 
 func TestTiocmset(t *testing.T) {
-	f, err := os.OpenFile("/dev/tty", syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
-	if err != nil {
-		t.Fatal(err)
-	}
+	f := opendev(t)
 	defer f.Close()
 
 	var status int
@@ -88,4 +73,38 @@ func TestTiocmset(t *testing.T) {
 	if err := Tiocmset(f.Fd(), &status); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestCfgetispeed(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	var termios syscall.Termios
+	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+		t.Fatal(err)
+	}
+	if baud := Cfgetispeed(&termios); baud == 0 {
+		t.Fatalf("Cfgetispeed: expected > 0, got %v", baud)
+	}
+}
+
+func TestCfgetospeed(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	var termios syscall.Termios
+	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+		t.Fatal(err)
+	}
+	if baud := Cfgetospeed(&termios); baud == 0 {
+		t.Fatalf("Cfgetospeed: expected > 0, got %v", baud)
+	}
+}
+
+func opendev(t *testing.T) *os.File {
+	f, err := os.OpenFile(*dev, syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return f
 }
