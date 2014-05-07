@@ -29,7 +29,7 @@ func Tcsetattr(fd, opt uintptr, argp *syscall.Termios) error {
 	case TCSADRAIN:
 		opt = syscall.TIOCSETAW
 	case TCSAFLUSH:
-		opt = syscall.TCIOSETAF
+		opt = syscall.TIOCSETAF
 	default:
 		return syscall.EINVAL
 	}
