@@ -7,21 +7,6 @@ import (
 
 type attr syscall.Termios
 
-func (t *Term) tcgetattr() (attr, error) {
-	var a attr
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCGETS, uintptr(unsafe.Pointer(&a)), 0, 0, 0); e != 0 {
-		return a, e
-	}
-	return a, nil
-}
-
-func (t *Term) tcsetattr(a attr) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, uintptr(t.fd), syscall.TCSETS, uintptr(unsafe.Pointer(&a)), 0, 0, 0); e != 0 {
-		return e
-	}
-	return nil
-}
-
 func (a *attr) setSpeed(baud int) {
 	var rates = map[int]uint32{
 		50:      syscall.B50,
