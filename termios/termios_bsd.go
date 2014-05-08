@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	FREAD     = 0x0001
-	FWRITE    = 0x0002
+	FREAD  = 0x0001
+	FWRITE = 0x0002
 )
 
 // Tcgetattr gets the current serial port settings.
