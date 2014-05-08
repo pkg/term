@@ -5,6 +5,22 @@ import "flag"
 
 var dev = flag.String("device", "/dev/tty", "device to use")
 
+func TestTermSetCbreak(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.SetCbreak(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTermSetRaw(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.SetRaw(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestTermSetSpeed(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()

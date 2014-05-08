@@ -44,3 +44,21 @@ func Tiocmbis(fd uintptr, status *int) error {
 func Tiocmbic(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMBIC, uintptr(unsafe.Pointer(status)))
 }
+
+// Cfmakecbreak modifies attr for cbreak mode.
+func Cfmakecbreak(attr *syscall.Termios) {
+	attr.Lflag &^= syscall.ECHO | syscall.ICANON
+	attr.Cc[syscall.VMIN] = 1
+	attr.Cc[syscall.VTIME] = 0
+}
+
+// Cfmakeraw modifies attr for raw mode.
+func Cfmakeraw(attr *syscall.Termios) {
+	attr.Iflag &^= syscall.BRKINT | syscall.ICRNL | syscall.INPCK | syscall.ISTRIP | syscall.IXON
+	attr.Oflag &^= syscall.OPOST
+	attr.Cflag &^= syscall.CSIZE | syscall.PARENB
+	attr.Cflag |= syscall.CS8
+	attr.Lflag &^= syscall.ECHO | syscall.ICANON | syscall.IEXTEN | syscall.ISIG
+	attr.Cc[syscall.VMIN] = 1
+	attr.Cc[syscall.VTIME] = 0
+}
