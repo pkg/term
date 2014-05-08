@@ -13,6 +13,14 @@ func TestTermSetCbreak(t *testing.T) {
 	}
 }
 
+func TestTermSetRaw(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.SetRaw(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestTermSetSpeed(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()

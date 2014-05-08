@@ -82,6 +82,16 @@ func (t *Term) SetCbreak() error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
+// SetRaw sets raw mode.
+func (t *Term) SetRaw() error {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		return err
+	}
+	termios.Cfmakeraw((*syscall.Termios)(&a))
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
+}
+
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
 	var a attr
