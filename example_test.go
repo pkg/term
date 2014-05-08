@@ -8,20 +8,24 @@ import (
 // Reset an Arduino by toggling the DTR signal.
 func ExampleTerm_SetDTR() {
 	t, _ := Open("/dev/USB0")
-
-	t.SetDTR(false)
-
-	time.Sleep(1 * time.Second)
-
-	t.SetDTR(true)
+	t.SetDTR(false) // toggle DTR low
+	time.Sleep(250 * time.Millisecond)
+	t.SetDTR(true) // raise DTR, resets Ardunio
 }
 
 // Send Break to the remote DTE.
 func ExampleTerm_SendBreak() {
-	t, _ := Open("/dev/ttyUSB1")
+	t, _ := Open("/dev/ttyUSB0")
 	for {
 		time.Sleep(3 * time.Second)
 		log.Println("Break...")
 		t.SendBreak()
 	}
+}
+
+// Restore the terminal state
+func ExampleTerm_Restore() {
+	t, _ := Open("/dev/tty")
+	// mutate terminal state
+	t.Restore()
 }

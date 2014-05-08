@@ -13,6 +13,14 @@ func TestTermSetSpeed(t *testing.T) {
 	}
 }
 
+func TestTermRestore(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.Restore(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func opendev(t *testing.T) *Term {
 	tt, err := Open(*dev)
 	if err != nil {
