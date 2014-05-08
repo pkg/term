@@ -72,6 +72,16 @@ func (t *Term) Close() error {
 	return err
 }
 
+// SetCbreak sets cbreak mode.
+func (t *Term) SetCbreak() error {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		return err
+	}
+	termios.Cfmakecbreak((*syscall.Termios)(&a))
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
+}
+
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
 	var a attr
