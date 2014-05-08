@@ -44,3 +44,10 @@ func Tiocmbis(fd uintptr, status *int) error {
 func Tiocmbic(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMBIC, uintptr(unsafe.Pointer(status)))
 }
+
+// Cfmakecbreak modifies attr for cbreak mode.
+func Cfmakecbreak(attr *syscall.Termios) {
+	attr.Lflag &^= syscall.ECHO | syscall.ICANON
+	attr.Cc[syscall.VMIN] = 1
+	attr.Cc[syscall.VTIME] = 0
+}
