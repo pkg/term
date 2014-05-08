@@ -71,6 +71,15 @@ err set to io.EOF.
 
 
 
+### func (\*Term) Restore
+``` go
+func (t *Term) Restore() error
+```
+Restore restores the state of the terminal captured at the point that
+the terminal was originally opened.
+
+
+
 ### func (\*Term) SendBreak
 ``` go
 func (t *Term) SendBreak() error

@@ -15,6 +15,7 @@ import (
 type Term struct {
 	name string
 	fd   int
+	orig syscall.Termios // original state of the terminal, see Open and Restore
 }
 
 // Open opens an asynchronous communications port.
@@ -23,7 +24,11 @@ func Open(name string) (*Term, error) {
 	if e != nil {
 		return nil, &os.PathError{"open", name, e}
 	}
-	return &Term{name: name, fd: fd}, nil
+	t := Term{name: name, fd: fd}
+	if err := termios.Tcgetattr(uintptr(t.fd), &t.orig); err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
@@ -102,4 +107,10 @@ func (t *Term) DTR() (bool, error) {
 	var status int
 	err := termios.Tiocmget(uintptr(t.fd), &status)
 	return status&syscall.TIOCM_DTR == syscall.TIOCM_DTR, err
+}
+
+// Restore restores the state of the terminal captured at the point that
+// the terminal was originally opened.
+func (t *Term) Restore() error {
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCIOFLUSH, &t.orig)
 }
