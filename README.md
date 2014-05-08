@@ -88,11 +88,27 @@ SendBreak sends a break signal.
 
 
 
+### func (\*Term) SetCbreak
+``` go
+func (t *Term) SetCbreak() error
+```
+SetCbreak sets cbreak mode.
+
+
+
 ### func (\*Term) SetDTR
 ``` go
 func (t *Term) SetDTR(v bool) error
 ```
 SetDTR sets the DTR (data terminal ready) signal.
+
+
+
+### func (\*Term) SetRaw
+``` go
+func (t *Term) SetRaw() error
+```
+SetRaw sets raw mode.
 
 
 
