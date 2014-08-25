@@ -95,6 +95,32 @@ func TestTiocmbic(t *testing.T) {
 	}
 }
 
+func TestTiocinq(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	var inq int
+	if err := Tiocinq(f.Fd(), &inq); err != nil {
+		t.Fatal(err)
+	}
+	if inq != 0 {
+		t.Fatal("Expected 0 bytes, got %v", inq)
+	}
+}
+
+func TestTiocoutq(t *testing.T) {
+	f := opendev(t)
+	defer f.Close()
+
+	var inq int
+	if err := Tiocoutq(f.Fd(), &inq); err != nil {
+		t.Fatal(err)
+	}
+	if inq != 0 {
+		t.Fatal("Expected 0 bytes, got %v", inq)
+	}
+}
+
 func TestCfgetispeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
