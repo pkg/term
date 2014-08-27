@@ -75,3 +75,10 @@ func (a *attr) setSpeed(baud int) error {
 	(*syscall.Termios)(a).Ospeed = rate
 	return nil
 }
+
+// Available returns the number of bytes available in the local buffer.
+func (t *Term) Available() (int, error) {
+	var n int
+	err := termios.Tiocinq(uintptr(t.fd), &n)
+	return n, err
+}
