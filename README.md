@@ -1,6 +1,8 @@
+use 'godoc cmd//target' for documentation on the /target command 
+
 
 # term
-    import "github.com/pkg/term"
+    import "."
 
 Package term manages POSIX terminals. As POSIX terminals are connected to,
 or emulate, a UART, this package also provides control over the various
@@ -9,6 +11,27 @@ UART and serial line parameters.
 
 
 
+
+
+## func CBreakMode
+``` go
+func CBreakMode(t *Term) error
+```
+CBreakMode places the terminal into cbreak mode.
+
+
+## func RawMode
+``` go
+func RawMode(t *Term) error
+```
+RawMode places the terminal into raw mode.
+
+
+## func Speed
+``` go
+func Speed(baud int) func(*Term) error
+```
+Speed sets the baud rate option for the terminal.
 
 
 
@@ -30,10 +53,26 @@ Term represents an asynchronous communications port.
 
 ### func Open
 ``` go
-func Open(name string) (*Term, error)
+func Open(name string, options ...func(*Term) error) (*Term, error)
 ```
 Open opens an asynchronous communications port.
 
+
+
+
+### func (\*Term) Available
+``` go
+func (t *Term) Available() (int, error)
+```
+Available returns how many bytes are unused in the buffer.
+
+
+
+### func (\*Term) Buffered
+``` go
+func (t *Term) Buffered() (int, error)
+```
+Buffered returns the number of bytes that have been written into the current buffer.
 
 
 
@@ -101,6 +140,14 @@ SetCbreak sets cbreak mode.
 func (t *Term) SetDTR(v bool) error
 ```
 SetDTR sets the DTR (data terminal ready) signal.
+
+
+
+### func (\*Term) SetOption
+``` go
+func (t *Term) SetOption(options ...func(*Term) error) error
+```
+SetOption takes one or more optoin function and applies them in order to Term.
 
 
 
