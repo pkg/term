@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+// Open a terminal in raw mode at 19200 baud.
+func ExampleOpen() {
+	Open("/dev/ttyUSB0", Speed(19200), RawMode)
+}
+
 // Reset an Arduino by toggling the DTR signal.
 func ExampleTerm_SetDTR() {
 	t, _ := Open("/dev/USB0")
