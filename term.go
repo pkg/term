@@ -19,7 +19,7 @@ type Term struct {
 }
 
 // Open opens an asynchronous communications port.
-func Open(name string) (*Term, error) {
+func Open(name string, options ...func(*Term) error) (*Term, error) {
 	fd, e := syscall.Open(name, syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
 	if e != nil {
 		return nil, &os.PathError{"open", name, e}
@@ -28,7 +28,17 @@ func Open(name string) (*Term, error) {
 	if err := termios.Tcgetattr(uintptr(t.fd), &t.orig); err != nil {
 		return nil, err
 	}
-	return &t, nil
+	return &t, t.SetOption(options...)
+}
+
+// SetOption takes one or more optoin function and applies them in order to Term.
+func (t *Term) SetOption(options ...func(*Term) error) error {
+	for _, opt := range options {
+		if err := opt(t); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
@@ -74,6 +84,11 @@ func (t *Term) Close() error {
 
 // SetCbreak sets cbreak mode.
 func (t *Term) SetCbreak() error {
+	return t.SetOption(CBreakMode)
+}
+
+// CBreakMode places the terminal into cbreak mode.
+func CBreakMode(t *Term) error {
 	var a attr
 	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
 		return err
@@ -84,6 +99,11 @@ func (t *Term) SetCbreak() error {
 
 // SetRaw sets raw mode.
 func (t *Term) SetRaw() error {
+	return t.SetOption(RawMode)
+}
+
+// RawMode places the terminal into raw mode.
+func RawMode(t *Term) error {
 	var a attr
 	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
 		return err
@@ -92,8 +112,19 @@ func (t *Term) SetRaw() error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
+// Speed sets the baud rate option for the terminal.
+func Speed(baud int) func(*Term) error {
+	return func(t *Term) error {
+		return t.setSpeed(baud)
+	}
+}
+
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
+	return t.SetOption(Speed(baud))
+}
+
+func (t *Term) setSpeed(baud int) error {
 	var a attr
 	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
 		return err
