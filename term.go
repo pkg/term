@@ -160,6 +160,23 @@ func (t *Term) DTR() (bool, error) {
 	return status&syscall.TIOCM_DTR == syscall.TIOCM_DTR, err
 }
 
+// SetRTS sets the RTS (data terminal ready) signal.
+func (t *Term) SetRTS(v bool) error {
+	bits := syscall.TIOCM_RTS
+	if v {
+		return termios.Tiocmbis(uintptr(t.fd), &bits)
+	} else {
+		return termios.Tiocmbic(uintptr(t.fd), &bits)
+	}
+}
+
+// RTS returns the state of the RTS (data terminal ready) signal.
+func (t *Term) RTS() (bool, error) {
+	var status int
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_RTS == syscall.TIOCM_RTS, err
+}
+
 // Restore restores the state of the terminal captured at the point that
 // the terminal was originally opened.
 func (t *Term) Restore() error {
