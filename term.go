@@ -31,7 +31,7 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 	return &t, t.SetOption(options...)
 }
 
-// SetOption takes one or more optoin function and applies them in order to Term.
+// SetOption takes one or more option function and applies them in order to Term.
 func (t *Term) SetOption(options ...func(*Term) error) error {
 	for _, opt := range options {
 		if err := opt(t); err != nil {
