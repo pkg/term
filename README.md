@@ -1,8 +1,6 @@
-use 'godoc cmd//target' for documentation on the /target command 
-
 
 # term
-    import "."
+    import "github.com/pkg/term"
 
 Package term manages POSIX terminals. As POSIX terminals are connected to,
 or emulate, a UART, this package also provides control over the various
@@ -100,6 +98,14 @@ Flush flushes both data received but not read, and data written but not transmit
 
 
 
+### func (\*Term) RTS
+``` go
+func (t *Term) RTS() (bool, error)
+```
+RTS returns the state of the RTS (data terminal ready) signal.
+
+
+
 ### func (\*Term) Read
 ``` go
 func (t *Term) Read(b []byte) (int, error)
@@ -147,7 +153,15 @@ SetDTR sets the DTR (data terminal ready) signal.
 ``` go
 func (t *Term) SetOption(options ...func(*Term) error) error
 ```
-SetOption takes one or more optoin function and applies them in order to Term.
+SetOption takes one or more option function and applies them in order to Term.
+
+
+
+### func (\*Term) SetRTS
+``` go
+func (t *Term) SetRTS(v bool) error
+```
+SetRTS sets the RTS (data terminal ready) signal.
 
 
 
