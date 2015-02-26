@@ -5,6 +5,27 @@ import "flag"
 
 var dev = flag.String("device", "/dev/tty", "device to use")
 
+// assert that Term implements the same method set across
+// all supported platforms
+var _ interface {
+	Available() (int, error)
+	Buffered() (int, error)
+	Close() error
+	DTR() (bool, error)
+	Flush() error
+	RTS() (bool, error)
+	Read(b []byte) (int, error)
+	Restore() error
+	SendBreak() error
+	SetCbreak() error
+	SetDTR(v bool) error
+	SetOption(options ...func(*Term) error) error
+	SetRTS(v bool) error
+	SetRaw() error
+	SetSpeed(baud int) error
+	Write(b []byte) (int, error)
+} = new(Term)
+
 func TestTermSetCbreak(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()
