@@ -148,9 +148,9 @@ func TestCfgetospeed(t *testing.T) {
 }
 
 func opendev(t *testing.T) *os.File {
-	f, err := os.OpenFile(*dev, syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
+	_, pts, err := Pty()
 	if err != nil {
 		t.Fatal(err)
 	}
-	return f
+	return pts
 }
