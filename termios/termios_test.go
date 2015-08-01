@@ -58,6 +58,7 @@ func TestTiocmget(t *testing.T) {
 
 	var status int
 	if err := Tiocmget(f.Fd(), &status); err != nil {
+		checktty(t, err)
 		t.Fatal(err)
 	}
 }
@@ -68,9 +69,11 @@ func TestTiocmset(t *testing.T) {
 
 	var status int
 	if err := Tiocmget(f.Fd(), &status); err != nil {
+		checktty(t, err)
 		t.Fatal(err)
 	}
 	if err := Tiocmset(f.Fd(), &status); err != nil {
+		checktty(t, err)
 		t.Fatal(err)
 	}
 }
@@ -81,6 +84,7 @@ func TestTiocmbis(t *testing.T) {
 
 	status := 0
 	if err := Tiocmbis(f.Fd(), &status); err != nil {
+		checktty(t, err)
 		t.Fatal(err)
 	}
 }
@@ -91,6 +95,7 @@ func TestTiocmbic(t *testing.T) {
 
 	status := 0
 	if err := Tiocmbic(f.Fd(), &status); err != nil {
+		checktty(t, err)
 		t.Fatal(err)
 	}
 }
@@ -153,4 +158,13 @@ func opendev(t *testing.T) *os.File {
 		t.Fatal(err)
 	}
 	return pts
+}
+
+func checktty(t *testing.T, err error) {
+
+	// some ioctls fail against char devices if they do not
+	// support a particular feature
+	if err == syscall.ENOTTY {
+		t.Skip(err)
+	}
 }
