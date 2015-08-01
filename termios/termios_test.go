@@ -3,6 +3,7 @@ package termios
 import (
 	"flag"
 	"os"
+	"runtime"
 	"syscall"
 	"testing"
 )
@@ -164,7 +165,7 @@ func checktty(t *testing.T, err error) {
 
 	// some ioctls fail against char devices if they do not
 	// support a particular feature
-	if err == syscall.ENOTTY {
+	if (runtime.GOOS == "darwin" && err == syscall.ENOTTY) || (runtime.GOOS == "linux" && err == syscall.EINVAL) {
 		t.Skip(err)
 	}
 }
