@@ -8,6 +8,8 @@ import (
 	"io"
 	"os"
 	"syscall"
+
+	"github.com/pkg/term/termios"
 )
 
 var errNotSupported = errors.New("not supported")
@@ -54,4 +56,18 @@ func (t *Term) Write(b []byte) (int, error) {
 		return n, &os.PathError{"write", t.name, e}
 	}
 	return n, nil
+}
+
+// Available returns how many bytes are unused in the buffer.
+func (t *Term) Available() (int, error) {
+	var n int
+	err := termios.Tiocinq(uintptr(t.fd), &n)
+	return n, err
+}
+
+// Buffered returns the number of bytes that have been written into the current buffer.
+func (t *Term) Buffered() (int, error) {
+	var n int
+	err := termios.Tiocoutq(uintptr(t.fd), &n)
+	return n, err
 }

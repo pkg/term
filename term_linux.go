@@ -1,7 +1,6 @@
 package term
 
 import "syscall"
-import "github.com/pkg/term/termios"
 
 type attr syscall.Termios
 
@@ -75,18 +74,4 @@ func (a *attr) setSpeed(baud int) error {
 	(*syscall.Termios)(a).Ispeed = rate
 	(*syscall.Termios)(a).Ospeed = rate
 	return nil
-}
-
-// Available returns how many bytes are unused in the buffer.
-func (t *Term) Available() (int, error) {
-	var n int
-	err := termios.Tiocinq(uintptr(t.fd), &n)
-	return n, err
-}
-
-// Buffered returns the number of bytes that have been written into the current buffer.
-func (t *Term) Buffered() (int, error) {
-	var n int
-	err := termios.Tiocoutq(uintptr(t.fd), &n)
-	return n, err
 }
