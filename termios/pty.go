@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"syscall"
-	"unsafe"
 )
 
 // Pty returns a UNIX 98 pseudoterminal device.
@@ -17,21 +16,30 @@ func Pty() (*os.File, *os.File, error) {
 		}
 		return uintptr(fd), nil
 	}
+
 	ptm, err := open("/dev/ptmx")
 	if err != nil {
 		return nil, nil, err
 	}
-	unlock := uintptr(0)
-	if err := ioctl(uintptr(ptm), syscall.TIOCSPTLCK, uintptr(unsafe.Pointer(&unlock))); err != nil {
-		return nil, nil, fmt.Errorf("TIOCSPLCK: %v", err)
-	}
-	var pty_nam uintptr
-	if err := ioctl(uintptr(ptm), syscall.TIOCGPTN, uintptr(unsafe.Pointer(&pty_nam))); err != nil {
-		return nil, nil, fmt.Errorf("TIOCGPTN: %v", err)
-	}
-	pts, err := open(fmt.Sprintf("/dev/pts/%d", pty_nam))
+
+	sname, err := ptsname(ptm)
 	if err != nil {
 		return nil, nil, err
 	}
-	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), fmt.Sprintf("/dev/pts/%d", pty_nam)), nil
+
+	err = grantpt(ptm)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = unlockpt(ptm)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pts, err := open(sname)
+	if err != nil {
+		return nil, nil, err
+	}
+	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), sname), nil
 }
