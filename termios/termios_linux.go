@@ -12,8 +12,6 @@ const (
 	TCFLSH  = 0x540B
 	TCSBRK  = 0x5409
 	TCSBRKP = 0x5425
-
-	ptsname = "/dev/pts/%d"
 )
 
 // Tcgetattr gets the current serial port settings.
