@@ -1,9 +1,10 @@
 package term
 
-import "testing"
-import "flag"
+import (
+	"testing"
 
-var dev = flag.String("device", "/dev/tty", "device to use")
+	"github.com/pkg/term/termios"
+)
 
 // assert that Term implements the same method set across
 // all supported platforms
@@ -59,9 +60,14 @@ func TestTermRestore(t *testing.T) {
 }
 
 func opendev(t *testing.T) *Term {
-	tt, err := Open(*dev)
+	_, pts, err := termios.Pty()
 	if err != nil {
 		t.Fatal(err)
 	}
-	return tt
+	term, err := Open(pts.Name())
+	if err != nil {
+		t.Fatal(err)
+	}
+	pts.Close()
+	return term
 }

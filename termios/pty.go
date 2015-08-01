@@ -33,5 +33,5 @@ func Pty() (*os.File, *os.File, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), "pts"), nil
+	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), fmt.Sprintf("/dev/pts/%d", pty_nam)), nil
 }
