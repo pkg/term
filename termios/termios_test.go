@@ -135,7 +135,7 @@ func TestCfgetispeed(t *testing.T) {
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
-	if baud := Cfgetispeed(&termios); baud == 0 {
+	if baud := Cfgetispeed(&termios); baud == 0 && runtime.GOOS != "linux" {
 		t.Fatalf("Cfgetispeed: expected > 0, got %v", baud)
 	}
 }
@@ -148,7 +148,7 @@ func TestCfgetospeed(t *testing.T) {
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
-	if baud := Cfgetospeed(&termios); baud == 0 {
+	if baud := Cfgetospeed(&termios); baud == 0 && runtime.GOOS != "linux" {
 		t.Fatalf("Cfgetospeed: expected > 0, got %v", baud)
 	}
 }
