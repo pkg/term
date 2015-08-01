@@ -29,9 +29,9 @@ func Pty() (*os.File, *os.File, error) {
 	if err := ioctl(uintptr(ptm), syscall.TIOCGPTN, uintptr(unsafe.Pointer(&pty_nam))); err != nil {
 		return nil, nil, fmt.Errorf("TIOCGPTN: %v", err)
 	}
-	pts, err := open(fmt.Sprintf("/dev/pts/%d", pty_nam))
+	pts, err := open(fmt.Sprintf(ptsname, pty_nam))
 	if err != nil {
 		return nil, nil, err
 	}
-	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), fmt.Sprintf("/dev/pts/%d", pty_nam)), nil
+	return os.NewFile(uintptr(ptm), "ptm"), os.NewFile(uintptr(pts), fmt.Sprintf(ptsname, pty_nam)), nil
 }
