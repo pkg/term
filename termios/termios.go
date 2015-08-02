@@ -17,13 +17,6 @@ const (
 	TCSAFLUSH = 2
 )
 
-func ioctl(fd, request, argp uintptr) error {
-	if _, _, e := syscall.Syscall6(syscall.SYS_IOCTL, fd, request, argp, 0, 0, 0); e != 0 {
-		return e
-	}
-	return nil
-}
-
 // Tiocmget returns the state of the MODEM bits.
 func Tiocmget(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMGET, uintptr(unsafe.Pointer(status)))
