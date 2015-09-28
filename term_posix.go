@@ -18,7 +18,7 @@ type Term struct {
 
 // Open opens an asynchronous communications port.
 func Open(name string, options ...func(*Term) error) (*Term, error) {
-	fd, e := syscall.Open(name, syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_RDWR, 0666)
+	fd, e := syscall.Open(name, syscall.O_NOCTTY|syscall.O_CLOEXEC|syscall.O_NDELAY|syscall.O_RDWR, 0666)
 	if e != nil {
 		return nil, &os.PathError{"open", name, e}
 	}
@@ -26,7 +26,10 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 	if err := termios.Tcgetattr(uintptr(t.fd), &t.orig); err != nil {
 		return nil, err
 	}
-	return &t, t.SetOption(options...)
+	if err := t.SetOption(options...); err != nil {
+		return nil, err
+	}
+	return &t, syscall.SetNonblock(t.fd, false)
 }
 
 // SetCbreak sets cbreak mode.
