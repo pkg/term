@@ -129,6 +129,39 @@ func (t *Term) setReadTimeout(d time.Duration) error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
+// FlowControl sets the flow control option for the terminal.
+func FlowControl(kind int) func(*Term) error {
+	return func(t *Term) error {
+		return t.setFlowControl(kind)
+	}
+}
+
+// SetFlowControl sets whether hardware flow control is enabled.
+func (t *Term) SetFlowControl(kind int) error {
+	return t.SetOption(FlowControl(kind))
+}
+
+func (t *Term) setFlowControl(kind int) error {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		return err
+	}
+	switch kind {
+	case NONE:
+		a.Iflag &^= termios.IXON | termios.IXOFF | termios.IXANY
+		a.Cflag &^= termios.CRTSCTS
+
+	case XONXOFF:
+		a.Cflag &^= termios.CRTSCTS
+		a.Iflag |= termios.IXON | termios.IXOFF | termios.IXANY
+
+	case HARDWARE:
+		a.Iflag &^= termios.IXON | termios.IXOFF | termios.IXANY
+		a.Cflag |= termios.CRTSCTS
+	}
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
+}
+
 // Flush flushes both data received but not read, and data written but not transmitted.
 func (t *Term) Flush() error {
 	return termios.Tcflush(uintptr(t.fd), termios.TCIOFLUSH)

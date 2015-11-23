@@ -12,6 +12,12 @@ import (
 	"github.com/pkg/term/termios"
 )
 
+const (
+	NONE     = iota // flow control off
+	XONXOFF         // software flow control
+	HARDWARE        // hardware flow control
+)
+
 var errNotSupported = errors.New("not supported")
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
