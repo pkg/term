@@ -2,6 +2,7 @@ package term
 
 import (
 	"testing"
+	"time"
 
 	"github.com/pkg/term/termios"
 )
@@ -47,6 +48,14 @@ func TestTermSetSpeed(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()
 	if err := tt.SetSpeed(57600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTermSetReadTimeout(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.SetReadTimeout(1 * time.Second); err != nil {
 		t.Fatal(err)
 	}
 }

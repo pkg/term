@@ -5,6 +5,7 @@ package term
 import (
 	"os"
 	"syscall"
+	"time"
 
 	"github.com/pkg/term/termios"
 )
@@ -80,6 +81,51 @@ func (t *Term) setSpeed(baud int) error {
 		return err
 	}
 	a.setSpeed(baud)
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
+}
+
+func clamp(v, lo, hi int64) int64 {
+	if v < lo {
+		return lo
+	}
+	if v > hi {
+		return hi
+	}
+	return v
+}
+
+// timeoutVals converts d into values suitable for termios VMIN and VTIME ctrl chars
+func timeoutVals(d time.Duration) (uint8, uint8) {
+	if d > 0 {
+		// VTIME is expressed in terms of deciseconds
+		vtimeDeci := d.Nanoseconds() / 1e6 / 100
+		// ensure valid range
+		vtime := uint8(clamp(vtimeDeci, 1, 0xff))
+		return 0, vtime
+	}
+	// block indefinitely until we receive at least 1 byte
+	return 1, 0
+}
+
+// ReadTimeout sets the read timeout option for the terminal.
+func ReadTimeout(d time.Duration) func(*Term) error {
+	return func(t *Term) error {
+		return t.setReadTimeout(d)
+	}
+}
+
+// SetReadTimeout sets the read timeout.
+// A zero value for d means read operations will not time out.
+func (t *Term) SetReadTimeout(d time.Duration) error {
+	return t.SetOption(ReadTimeout(d))
+}
+
+func (t *Term) setReadTimeout(d time.Duration) error {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		return err
+	}
+	a.Cc[syscall.VMIN], a.Cc[syscall.VTIME] = timeoutVals(d)
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
