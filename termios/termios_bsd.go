@@ -11,6 +11,13 @@ import (
 const (
 	FREAD  = 0x0001
 	FWRITE = 0x0002
+
+	IXON       = 0x00000200
+	IXOFF      = 0x00000400
+	IXANY      = 0x00000800
+	CCTS_OFLOW = 0x00010000
+	CRTS_IFLOW = 0x00020000
+	CRTSCTS    = CCTS_OFLOW | CRTS_IFLOW
 )
 
 // Tcgetattr gets the current serial port settings.

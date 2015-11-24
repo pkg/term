@@ -60,6 +60,19 @@ func TestTermSetReadTimeout(t *testing.T) {
 	}
 }
 
+func TestTermSetFlowControl(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+
+	kinds := []int{XONXOFF, NONE, HARDWARE, NONE, XONXOFF, HARDWARE, NONE}
+
+	for _, kind := range kinds {
+		if err := tt.SetFlowControl(kind); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func TestTermRestore(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()

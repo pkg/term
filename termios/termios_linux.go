@@ -12,6 +12,11 @@ const (
 	TCFLSH  = 0x540B
 	TCSBRK  = 0x5409
 	TCSBRKP = 0x5425
+
+	IXON    = 0x00000400
+	IXANY   = 0x00000800
+	IXOFF   = 0x00001000
+	CRTSCTS = 0x80000000
 )
 
 // Tcgetattr gets the current serial port settings.
