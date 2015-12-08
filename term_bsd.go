@@ -7,7 +7,7 @@ import "syscall"
 type attr syscall.Termios
 
 func (a *attr) setSpeed(baud int) error {
-	var rate uint64
+	var rate uint32
 	switch baud {
 	case 50:
 		rate = syscall.B50
