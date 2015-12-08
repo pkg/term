@@ -1,3 +1,4 @@
+// +build linux
 package termios
 
 import (
