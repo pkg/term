@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-func ptsname(fd uintptr) (string, error) {
+func Ptsname(fd uintptr) (string, error) {
 	n := make([]byte, _IOC_PARM_LEN(syscall.TIOCPTYGNAME))
 
 	err := ioctl(fd, syscall.TIOCPTYGNAME, uintptr(unsafe.Pointer(&n[0])))

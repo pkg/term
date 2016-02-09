@@ -22,7 +22,7 @@ func Pty() (*os.File, *os.File, error) {
 		return nil, nil, err
 	}
 
-	sname, err := ptsname(ptm)
+	sname, err := Ptsname(ptm)
 	if err != nil {
 		return nil, nil, err
 	}
