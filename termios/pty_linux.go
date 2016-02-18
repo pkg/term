@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-func ptsname(fd uintptr) (string, error) {
+func Ptsname(fd uintptr) (string, error) {
 	var n uintptr
 	err := ioctl(fd, syscall.TIOCGPTN, uintptr(unsafe.Pointer(&n)))
 	if err != nil {
