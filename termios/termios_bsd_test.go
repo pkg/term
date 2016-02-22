@@ -12,7 +12,6 @@ func TestTcflush(t *testing.T) {
 	defer f.Close()
 
 	if err := Tcflush(f.Fd(), syscall.TCIOFLUSH); err != nil {
-		checktty(t, err)
 		t.Fatal(err)
 	}
 }
