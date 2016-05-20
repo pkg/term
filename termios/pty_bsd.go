@@ -1,3 +1,5 @@
+// +build freebsd openbsd netbsd
+
 package termios
 
 import (
@@ -6,8 +8,18 @@ import (
 	"unsafe"
 )
 
+func posix_openpt(oflag int) (fd uintptr, err error) {
+	// Copied from debian-golang-pty/pty_freebsd.go.
+	r0, _, e1 := syscall.Syscall(syscall.SYS_POSIX_OPENPT, uintptr(oflag), 0, 0)
+	fd = uintptr(r0)
+	if e1 != 0 {
+		err = e1
+	}
+	return
+}
+
 func open_pty_master() (uintptr, error) {
-	return open_device("/dev/ptmx")
+	return posix_openpt(syscall.O_NOCTTY|syscall.O_RDWR|syscall.O_CLOEXEC)
 }
 
 func Ptsname(fd uintptr) (string, error) {
@@ -25,6 +37,5 @@ func grantpt(fd uintptr) error {
 }
 
 func unlockpt(fd uintptr) error {
-	var n uintptr
-	return ioctl(fd, syscall.TIOCSPTLCK, uintptr(unsafe.Pointer(&n)))
+	return nil
 }

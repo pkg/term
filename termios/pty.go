@@ -6,18 +6,18 @@ import (
 	"syscall"
 )
 
+func open_device(path string) (uintptr, error) {
+	fd, err := syscall.Open(path, syscall.O_NOCTTY|syscall.O_RDWR|syscall.O_CLOEXEC, 0666)
+	if err != nil {
+		return 0, fmt.Errorf("unable to open %q: %v", path, err)
+	}
+	return uintptr(fd), nil
+}
+
 // Pty returns a UNIX 98 pseudoterminal device.
 // Pty returns a pair of fds representing the master and slave pair.
 func Pty() (*os.File, *os.File, error) {
-	open := func(path string) (uintptr, error) {
-		fd, err := syscall.Open(path, syscall.O_NOCTTY|syscall.O_RDWR|syscall.O_CLOEXEC, 0666)
-		if err != nil {
-			return 0, fmt.Errorf("unable to open %q: %v", path, err)
-		}
-		return uintptr(fd), nil
-	}
-
-	ptm, err := open("/dev/ptmx")
+	ptm, err := open_pty_master()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,7 +37,7 @@ func Pty() (*os.File, *os.File, error) {
 		return nil, nil, err
 	}
 
-	pts, err := open(sname)
+	pts, err := open_device(sname)
 	if err != nil {
 		return nil, nil, err
 	}

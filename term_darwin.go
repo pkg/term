@@ -1,5 +1,3 @@
-// +build freebsd openbsd netbsd
-
 package term
 
 import "syscall"
@@ -7,7 +5,7 @@ import "syscall"
 type attr syscall.Termios
 
 func (a *attr) setSpeed(baud int) error {
-	var rate uint32
+	var rate uint64
 	switch baud {
 	case 50:
 		rate = syscall.B50
