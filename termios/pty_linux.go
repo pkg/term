@@ -6,6 +6,10 @@ import (
 	"unsafe"
 )
 
+func open_pty_master() (uintptr, error) {
+	return open_device("/dev/ptmx")
+}
+
 func Ptsname(fd uintptr) (string, error) {
 	var n uintptr
 	err := ioctl(fd, syscall.TIOCGPTN, uintptr(unsafe.Pointer(&n)))

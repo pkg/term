@@ -6,6 +6,10 @@ import (
 	"unsafe"
 )
 
+func open_pty_master() (uintptr, error) {
+	return open_device("/dev/ptmx")
+}
+
 func Ptsname(fd uintptr) (string, error) {
 	n := make([]byte, _IOC_PARM_LEN(syscall.TIOCPTYGNAME))
 
