@@ -72,16 +72,12 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 		return nil, &os.PathError{"open", name, e}
 	}
 
-	ptem := "ptem"
-	err := unix.IoctlSetInt(fd, C.I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(ptem)))))
-	if err != nil {
-		return nil, err
-	}
-
-	ldterm := "ldterm"
-	err = unix.IoctlSetInt(fd, C.I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(ldterm)))))
-	if err != nil {
-		return nil, err
+	modules := [2]string{"ptem", "ldterm"}
+	for _, mod := range modules {
+		err := unix.IoctlSetInt(fd, C.I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(mod)))))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	t := Term{name: name, fd: fd}
