@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/pkg/term/termios"
-	"golang.org/x/sys/unix"
 )
 
 // Open opens an asynchronous communications port.
