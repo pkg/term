@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/pkg/term/termios"
-	"fmt"
 	"golang.org/x/sys/unix"
 )
 
