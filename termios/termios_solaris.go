@@ -78,11 +78,25 @@ func Tiocoutq(fd uintptr, argp *int) error {
 // Cfgetispeed returns the input baud rate stored in the termios structure.
 func Cfgetispeed(attr *syscall.Termios) uint32 {
 	solTermios := (*unix.Termios)(attr)
-	return uint32(C.cfgetispeed((*C.termios_t)(unsafe.Pointer(&solTermios))))
+	return uint32(C.cfgetispeed((*C.termios_t)(unsafe.Pointer(solTermios))))
+}
+
+// Cfsetispeed sets the input baud rate stored in the termios structure.
+func Cfsetispeed(attr *syscall.Termios, speed uintptr) error {
+	solTermios := (*unix.Termios)(attr)
+	_, err := C.cfsetispeed((*C.termios_t)(unsafe.Pointer(solTermios)), C.speed_t(speed))
+	return err
 }
 
 // Cfgetospeed returns the output baud rate stored in the termios structure.
 func Cfgetospeed(attr *syscall.Termios) uint32 {
 	solTermios := (*unix.Termios)(attr)
-	return uint32(C.cfgetospeed((*C.termios_t)(unsafe.Pointer(&solTermios))))
+	return uint32(C.cfgetospeed((*C.termios_t)(unsafe.Pointer(solTermios))))
+}
+
+// Cfsetospeed sets the output baud rate stored in the termios structure.
+func Cfsetospeed(attr *syscall.Termios, speed uintptr) error {
+	solTermios := (*unix.Termios)(attr)
+	_, err := C.cfsetospeed((*C.termios_t)(unsafe.Pointer(solTermios)), C.speed_t(speed))
+	return err
 }

@@ -59,9 +59,17 @@ func (a *attr) setSpeed(baud int) error {
 	default:
 		return syscall.EINVAL
 	}
-	(*syscall.Termios)(a).Cflag = syscall.CS8 | syscall.CREAD | syscall.CLOCAL | rate
-	//(*syscall.Termios)(a).Ispeed = rate
-	//(*syscall.Termios)(a).Ospeed = rate
+
+	err := termios.Cfsetispeed((*syscall.Termios)(a), uintptr(rate))
+	if err != nil {
+		return err
+	}
+
+	err = termios.Cfsetospeed((*syscall.Termios)(a), uintptr(rate))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
