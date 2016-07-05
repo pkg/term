@@ -7,16 +7,6 @@ import (
 	"unsafe"
 )
 
-const (
-	TCIFLUSH  = 0
-	TCOFLUSH  = 1
-	TCIOFLUSH = 2
-
-	TCSANOW   = 0
-	TCSADRAIN = 1
-	TCSAFLUSH = 2
-)
-
 // Tiocmget returns the state of the MODEM bits.
 func Tiocmget(fd uintptr, status *int) error {
 	return ioctl(fd, syscall.TIOCMGET, uintptr(unsafe.Pointer(status)))
