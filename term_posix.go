@@ -16,6 +16,11 @@ type Term struct {
 	orig syscall.Termios // original state of the terminal, see Open and Restore
 }
 
+// Get the underlying file descriptor for use in combination with other system APIs.
+func (t *Term) Fd() int {
+	return t.fd
+}
+
 // SetCbreak sets cbreak mode.
 func (t *Term) SetCbreak() error {
 	return t.SetOption(CBreakMode)
