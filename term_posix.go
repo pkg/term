@@ -16,6 +16,33 @@ type Term struct {
 	orig syscall.Termios // original state of the terminal, see Open and Restore
 }
 
+// SetAttr returns an option function which will apply the provided modifier to
+// a syscall.Termios before using that syscall.Termios to set the state of the
+// Term. This allows a developer to manually set attributes for the terminal.
+// Here's an example case to set a terminal into raw mode, but then re-enable
+// the 'opost' attribute:
+//
+//     func EnableOutputPostprocess(a *syscall.Termios) uintptr {
+//         a.Oflag |= syscall.OPOST
+//         return termios.TCSANOW
+//     }
+//
+//     func init() {
+//         t, _ = term.Open("/dev/tty")
+//         t.SetRaw()
+//         t.SetOption(term.SetAttr(EnableOutputPostprocess))
+//     }
+func SetAttr(modifier func(*syscall.Termios) uintptr) func(*Term) error {
+	return func(t *Term) error {
+		var a syscall.Termios
+		if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+			return err
+		}
+		action := modifier((*syscall.Termios)(&a))
+		return termios.Tcsetattr(uintptr(t.fd), action, (*syscall.Termios)(&a))
+	}
+}
+
 // SetCbreak sets cbreak mode.
 func (t *Term) SetCbreak() error {
 	return t.SetOption(CBreakMode)
