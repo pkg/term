@@ -110,7 +110,7 @@ func TestTiocinq(t *testing.T) {
 		t.Fatal(err)
 	}
 	if inq != 0 {
-		t.Fatal("Expected 0 bytes, got %v", inq)
+		t.Fatalf("Expected 0 bytes, got %v", inq)
 	}
 }
 
@@ -123,7 +123,7 @@ func TestTiocoutq(t *testing.T) {
 		t.Fatal(err)
 	}
 	if inq != 0 {
-		t.Fatal("Expected 0 bytes, got %v", inq)
+		t.Fatalf("Expected 0 bytes, got %v", inq)
 	}
 }
 
