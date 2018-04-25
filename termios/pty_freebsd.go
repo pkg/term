@@ -1,5 +1,3 @@
-// +build freebsd openbsd netbsd
-
 package termios
 
 import (
