@@ -195,3 +195,8 @@ func (t *Term) Close() error {
 	t.fd = -1
 	return err
 }
+
+// GetFd get terminal's file descripter
+func (t *Term) GetFd() int {
+	return t.fd
+}
