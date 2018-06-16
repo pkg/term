@@ -33,4 +33,3 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 func (t *Term) Restore() error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCIOFLUSH, &t.orig)
 }
-

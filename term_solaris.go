@@ -4,10 +4,10 @@ package term
 import "C"
 
 import (
-	"syscall"
 	"github.com/pkg/term/termios"
-	"os"
 	"golang.org/x/sys/unix"
+	"os"
+	"syscall"
 	"unsafe"
 )
 

@@ -19,7 +19,7 @@ func posix_openpt(oflag int) (fd uintptr, err error) {
 }
 
 func open_pty_master() (uintptr, error) {
-	return posix_openpt(syscall.O_NOCTTY|syscall.O_RDWR|syscall.O_CLOEXEC)
+	return posix_openpt(syscall.O_NOCTTY | syscall.O_RDWR | syscall.O_CLOEXEC)
 }
 
 func Ptsname(fd uintptr) (string, error) {
