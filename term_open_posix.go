@@ -5,7 +5,6 @@ package term
 import (
 	"os"
 	"syscall"
-	"time"
 
 	"github.com/pkg/term/termios"
 )
@@ -19,7 +18,6 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 
 	t := Term{name: name, fd: fd}
 	if err := termios.Tcgetattr(uintptr(t.fd), &t.orig); err != nil {
-		time.Sleep(time.Second * 100)
 		return nil, err
 	}
 	if err := t.SetOption(options...); err != nil {
@@ -33,4 +31,3 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 func (t *Term) Restore() error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCIOFLUSH, &t.orig)
 }
-
