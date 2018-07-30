@@ -12,9 +12,13 @@ import (
 var _ interface {
 	Available() (int, error)
 	Buffered() (int, error)
+	CTS() (bool, error)
 	Close() error
+	DCD() (bool, error)
+	DSR() (bool, error)
 	DTR() (bool, error)
 	Flush() error
+	RI() (bool, error)
 	RTS() (bool, error)
 	Read(b []byte) (int, error)
 	Restore() error
