@@ -1,4 +1,4 @@
-// +build freebsd openbsd netbsd
+// +build dragonfly freebsd
 
 package term
 
