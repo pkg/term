@@ -3,6 +3,8 @@ package termios
 import (
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 const (
@@ -79,3 +81,9 @@ func Cfgetispeed(attr *syscall.Termios) uint32 { return attr.Ispeed }
 
 // Cfgetospeed returns the output baud rate stored in the termios structure.
 func Cfgetospeed(attr *syscall.Termios) uint32 { return attr.Ospeed }
+
+// GetWinSize returns the window dimenions as rows, cols.
+func GetWinSize(fd uintptr) (int, int, error) {
+	wsz, err := unix.IoctlGetWinsize(int(fd), syscall.TIOCGWINSZ)
+	return int(wsz.Row), int(wsz.Col), err
+}

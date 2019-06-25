@@ -1,6 +1,8 @@
 package term
 
-import "syscall"
+import (
+	"syscall"
+)
 
 type attr syscall.Termios
 

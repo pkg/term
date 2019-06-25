@@ -77,3 +77,8 @@ func (t *Term) Buffered() (int, error) {
 	err := termios.Tiocoutq(uintptr(t.fd), &n)
 	return n, err
 }
+
+// GetWinSize returns the window size as rows, cols.
+func (t *Term) GetWinSize() (int, int, error) {
+	return termios.GetWinSize(uintptr(t.fd))
+}

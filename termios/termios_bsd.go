@@ -6,6 +6,8 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 const (
@@ -87,4 +89,10 @@ func Tiocinq(fd uintptr, argp *int) error {
 // Tiocoutq return the number of bytes in the output buffer.
 func Tiocoutq(fd uintptr, argp *int) error {
 	return ioctl(fd, syscall.TIOCOUTQ, uintptr(unsafe.Pointer(argp)))
+}
+
+// GetWinSize returns the window dimenions as rows, cols.
+func GetWinSize(fd uintptr) (int, int, error) {
+	wsz, err := unix.IoctlGetWinsize(int(fd), syscall.TIOCGWINSZ)
+	return int(wsz.Row), int(wsz.Col), err
 }

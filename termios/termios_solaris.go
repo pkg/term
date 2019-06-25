@@ -7,8 +7,9 @@ import "C"
 import (
 	"syscall"
 
-	"golang.org/x/sys/unix"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 const (
@@ -101,27 +102,32 @@ func Cfsetospeed(attr *syscall.Termios, speed uintptr) error {
 	return err
 }
 
-
 // tiosToUnix copies a syscall.Termios to a x/sys/unix.Termios.
 // This is needed since type conversions between the two fail due to
 // more recent x/sys/unix.Termios renaming the padding field.
 func tiosToUnix(st *syscall.Termios) *unix.Termios {
 	return &unix.Termios{
-		Iflag:  st.Iflag,
-		Oflag:  st.Oflag,
-		Cflag:  st.Cflag,
-		Lflag:  st.Lflag,
-		Cc:     st.Cc,
+		Iflag: st.Iflag,
+		Oflag: st.Oflag,
+		Cflag: st.Cflag,
+		Lflag: st.Lflag,
+		Cc:    st.Cc,
 	}
 }
 
 // tiosToSyscall copies a x/sys/unix.Termios to a syscall.Termios.
 func tiosToSyscall(ut *unix.Termios) *syscall.Termios {
 	return &syscall.Termios{
-		Iflag:  ut.Iflag,
-		Oflag:  ut.Oflag,
-		Cflag:  ut.Cflag,
-		Lflag:  ut.Lflag,
-		Cc:     ut.Cc,
+		Iflag: ut.Iflag,
+		Oflag: ut.Oflag,
+		Cflag: ut.Cflag,
+		Lflag: ut.Lflag,
+		Cc:    ut.Cc,
 	}
+}
+
+// GetWinSize returns the window dimenions as rows, cols.
+func GetWinSize(fd uintptr) (int, int, error) {
+	wsz, err := unix.IoctlGetWinsize(int(fd), syscall.TIOCGWINSZ)
+	return int(wsz.Row), int(wsz.Col), err
 }
