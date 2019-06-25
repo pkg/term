@@ -153,6 +153,23 @@ func TestCfgetospeed(t *testing.T) {
 	}
 }
 
+func TestGetWinSize(t *testing.T) {
+	// We need to open /dev/tty rather than a pty, as ptys
+	// don't give back valid window sizes.
+	f, err := os.Open(*dev)
+	if err != nil {
+		t.SkipNow()
+	}
+	defer f.Close()
+
+	rows, cols, err := GetWinSize(f.Fd())
+	if err != nil {
+		t.Fatal(err)
+	} else if rows == 0 || cols == 0 {
+		t.Fatalf("GetWinSize: invalid dimensions, rows %d cols %d", rows, cols)
+	}
+}
+
 func opendev(t *testing.T) *os.File {
 	_, pts, err := Pty()
 	if err != nil {

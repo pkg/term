@@ -3,8 +3,9 @@ package term
 import (
 	"testing"
 
-	"github.com/pkg/term/termios"
 	"time"
+
+	"github.com/pkg/term/termios"
 )
 
 // assert that Term implements the same method set across
@@ -25,7 +26,9 @@ var _ interface {
 	SetRTS(v bool) error
 	SetRaw() error
 	SetSpeed(baud int) error
+	GetSpeed() (int, error)
 	Write(b []byte) (int, error)
+	GetWinSize() (int, int, error)
 } = new(Term)
 
 func TestTermSetCbreak(t *testing.T) {
@@ -49,6 +52,12 @@ func TestTermSetSpeed(t *testing.T) {
 	defer tt.Close()
 	if err := tt.SetSpeed(57600); err != nil {
 		t.Fatal(err)
+	}
+
+	if spd, err := tt.GetSpeed(); err != nil {
+		t.Fatal(err)
+	} else if spd != 57600 {
+		t.Errorf("speed mismatch %d != 57600", spd)
 	}
 }
 
@@ -77,6 +86,16 @@ func TestTermRestore(t *testing.T) {
 	tt := opendev(t)
 	defer tt.Close()
 	if err := tt.Restore(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGetWinSize(t *testing.T) {
+	// NB: Pty will not have a valid window size; for that
+	// we would need /dev/tty.
+	tt := opendev(t)
+	defer tt.Close()
+	if _, _, err := tt.GetWinSize(); err != nil {
 		t.Fatal(err)
 	}
 }
