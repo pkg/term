@@ -121,6 +121,15 @@ func (t *Term) setSpeed(baud int) error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*syscall.Termios)(&a))
 }
 
+// GetSpeed gets the transmit baud rate.
+func (t *Term) GetSpeed() (int, error) {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		return 0, err
+	}
+	return a.getSpeed()
+}
+
 // Flush flushes both data received but not read, and data written but not transmitted.
 func (t *Term) Flush() error {
 	return termios.Tcflush(uintptr(t.fd), termios.TCIOFLUSH)
