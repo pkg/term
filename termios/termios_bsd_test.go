@@ -3,15 +3,16 @@
 package termios
 
 import (
-	"syscall"
 	"testing"
+
+	"golang.org/x/sys/unix"
 )
 
 func TestTcflush(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	if err := Tcflush(f.Fd(), syscall.TCIOFLUSH); err != nil {
+	if err := Tcflush(f.Fd(), unix.TCIOFLUSH); err != nil {
 		t.Fatal(err)
 	}
 }
