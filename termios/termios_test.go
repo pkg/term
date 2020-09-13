@@ -6,8 +6,9 @@ import (
 	"flag"
 	"os"
 	"runtime"
-	"syscall"
 	"testing"
+
+	"golang.org/x/sys/unix"
 )
 
 var dev = flag.String("device", "/dev/tty", "device to use")
@@ -16,7 +17,7 @@ func TestTcgetattr(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios syscall.Termios
+	var termios unix.Termios
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
@@ -26,7 +27,7 @@ func TestTcsetattr(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios syscall.Termios
+	var termios unix.Termios
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +134,7 @@ func TestCfgetispeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios syscall.Termios
+	var termios unix.Termios
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
@@ -146,7 +147,7 @@ func TestCfgetospeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios syscall.Termios
+	var termios unix.Termios
 	if err := Tcgetattr(f.Fd(), &termios); err != nil {
 		t.Fatal(err)
 	}
@@ -167,7 +168,7 @@ func checktty(t *testing.T, err error) {
 
 	// some ioctls fail against char devices if they do not
 	// support a particular feature
-	if (runtime.GOOS == "darwin" && err == syscall.ENOTTY) || (runtime.GOOS == "linux" && err == syscall.EINVAL) {
+	if (runtime.GOOS == "darwin" && err == unix.ENOTTY) || (runtime.GOOS == "linux" && err == unix.EINVAL) {
 		t.Skip(err)
 	}
 }
