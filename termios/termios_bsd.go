@@ -23,7 +23,7 @@ const (
 
 // Tcgetattr gets the current serial port settings.
 func Tcgetattr(fd uintptr, argp *unix.Termios) error {
-	return ioctl(fd, unix.TIOCGETA, uintptr(unsafe.Pointer(argp)))
+	return unix.IoctlSetTermios(int(fd), unix.TIOCGETA, argp)
 }
 
 // Tcsetattr sets the current serial port settings.
@@ -38,7 +38,7 @@ func Tcsetattr(fd, opt uintptr, argp *unix.Termios) error {
 	default:
 		return unix.EINVAL
 	}
-	return ioctl(fd, opt, uintptr(unsafe.Pointer(argp)))
+	return unix.IoctlSetTermios(int(fd), uint(opt), argp)
 }
 
 // Tcsendbreak function transmits a continuous stream of zero-valued bits for
