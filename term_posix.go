@@ -67,6 +67,15 @@ func (t *Term) setSpeed(baud int) error {
 	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
 }
 
+// GetSpeed gets the current output baud rate.
+func (t *Term) GetSpeed() (int, error) {
+	var a attr
+	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+		return 0, err
+	}
+	return a.getSpeed()
+}
+
 func clamp(v, lo, hi int64) int64 {
 	if v < lo {
 		return lo

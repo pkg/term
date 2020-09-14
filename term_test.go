@@ -5,8 +5,9 @@ package term
 import (
 	"testing"
 
-	"github.com/pkg/term/termios"
 	"time"
+
+	"github.com/pkg/term/termios"
 )
 
 // assert that Term implements the same method set across
@@ -27,6 +28,7 @@ var _ interface {
 	SetRTS(v bool) error
 	SetRaw() error
 	SetSpeed(baud int) error
+	GetSpeed() (int, error)
 	Write(b []byte) (int, error)
 } = new(Term)
 
@@ -51,6 +53,12 @@ func TestTermSetSpeed(t *testing.T) {
 	defer tt.Close()
 	if err := tt.SetSpeed(57600); err != nil {
 		t.Fatal(err)
+	}
+
+	if spd, err := tt.GetSpeed(); err != nil {
+		t.Fatal(err)
+	} else if spd != 57600 {
+		t.Errorf("speed mismatch %d != 57600", spd)
 	}
 }
 
