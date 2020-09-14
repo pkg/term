@@ -68,14 +68,10 @@ func (t *Term) Write(b []byte) (int, error) {
 
 // Available returns how many bytes are unused in the buffer.
 func (t *Term) Available() (int, error) {
-	var n int
-	err := termios.Tiocinq(uintptr(t.fd), &n)
-	return n, err
+	return termios.Tiocinq(uintptr(t.fd))
 }
 
 // Buffered returns the number of bytes that have been written into the current buffer.
 func (t *Term) Buffered() (int, error) {
-	var n int
-	err := termios.Tiocoutq(uintptr(t.fd), &n)
-	return n, err
+	return termios.Tiocoutq(uintptr(t.fd))
 }

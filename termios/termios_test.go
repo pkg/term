@@ -60,8 +60,7 @@ func TestTiocmget(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var status int
-	if err := Tiocmget(f.Fd(), &status); err != nil {
+	if _, err := Tiocmget(f.Fd()); err != nil {
 		checktty(t, err)
 		t.Fatal(err)
 	}
@@ -71,12 +70,12 @@ func TestTiocmset(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var status int
-	if err := Tiocmget(f.Fd(), &status); err != nil {
+	status, err := Tiocmget(f.Fd())
+	if err != nil {
 		checktty(t, err)
 		t.Fatal(err)
 	}
-	if err := Tiocmset(f.Fd(), &status); err != nil {
+	if err := Tiocmset(f.Fd(), status); err != nil {
 		checktty(t, err)
 		t.Fatal(err)
 	}
@@ -86,8 +85,7 @@ func TestTiocmbis(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	status := 0
-	if err := Tiocmbis(f.Fd(), &status); err != nil {
+	if err := Tiocmbis(f.Fd(), 0); err != nil {
 		checktty(t, err)
 		t.Fatal(err)
 	}
@@ -97,8 +95,7 @@ func TestTiocmbic(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	status := 0
-	if err := Tiocmbic(f.Fd(), &status); err != nil {
+	if err := Tiocmbic(f.Fd(), 0); err != nil {
 		checktty(t, err)
 		t.Fatal(err)
 	}
@@ -108,8 +105,8 @@ func TestTiocinq(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var inq int
-	if err := Tiocinq(f.Fd(), &inq); err != nil {
+	inq, err := Tiocinq(f.Fd())
+	if err != nil {
 		t.Fatal(err)
 	}
 	if inq != 0 {
@@ -121,8 +118,8 @@ func TestTiocoutq(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var inq int
-	if err := Tiocoutq(f.Fd(), &inq); err != nil {
+	inq, err := Tiocoutq(f.Fd())
+	if err != nil {
 		t.Fatal(err)
 	}
 	if inq != 0 {

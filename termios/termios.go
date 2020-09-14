@@ -3,29 +3,27 @@
 package termios
 
 import (
-	"unsafe"
-
 	"golang.org/x/sys/unix"
 )
 
 // Tiocmget returns the state of the MODEM bits.
-func Tiocmget(fd uintptr, status *int) error {
-	return ioctl(fd, unix.TIOCMGET, uintptr(unsafe.Pointer(status)))
+func Tiocmget(fd uintptr) (int, error) {
+	return unix.IoctlGetInt(int(fd), unix.TIOCMGET)
 }
 
 // Tiocmset sets the state of the MODEM bits.
-func Tiocmset(fd uintptr, status *int) error {
-	return ioctl(fd, unix.TIOCMSET, uintptr(unsafe.Pointer(status)))
+func Tiocmset(fd uintptr, status int) error {
+	return unix.IoctlSetInt(int(fd), unix.TIOCMSET, status)
 }
 
 // Tiocmbis sets the indicated modem bits.
-func Tiocmbis(fd uintptr, status *int) error {
-	return ioctl(fd, unix.TIOCMBIS, uintptr(unsafe.Pointer(status)))
+func Tiocmbis(fd uintptr, status int) error {
+	return unix.IoctlSetPointerInt(int(fd), unix.TIOCMBIS, status)
 }
 
 // Tiocmbic clears the indicated modem bits.
-func Tiocmbic(fd uintptr, status *int) error {
-	return ioctl(fd, unix.TIOCMBIC, uintptr(unsafe.Pointer(status)))
+func Tiocmbic(fd uintptr, status int) error {
+	return unix.IoctlSetPointerInt(int(fd), unix.TIOCMBIC, status)
 }
 
 // Cfmakecbreak modifies attr for cbreak mode.

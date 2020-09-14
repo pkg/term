@@ -4,7 +4,6 @@ package termios
 
 import (
 	"time"
-	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
@@ -45,16 +44,16 @@ func Tcsetattr(fd, opt uintptr, argp *unix.Termios) error {
 // four-tenths of a second to the terminal referenced by fildes. The duration
 // parameter is ignored in this implementation.
 func Tcsendbreak(fd, duration uintptr) error {
-	if err := ioctl(fd, unix.TIOCSBRK, 0); err != nil {
+	if err := unix.IoctlSetInt(int(fd), unix.TIOCSBRK, 0); err != nil {
 		return err
 	}
 	time.Sleep(4 / 10 * time.Second)
-	return ioctl(fd, unix.TIOCCBRK, 0)
+	return unix.IoctlSetInt(int(fd), unix.TIOCCBRK, 0)
 }
 
 // Tcdrain waits until all output written to the terminal referenced by fd has been transmitted to the terminal.
 func Tcdrain(fd uintptr) error {
-	return ioctl(fd, unix.TIOCDRAIN, 0)
+	return unix.IoctlSetInt(int(fd), unix.TIOCDRAIN, 0)
 }
 
 // Tcflush discards data written to the object referred to by fd but not transmitted, or data received but not read, depending on the value of which.
@@ -70,7 +69,7 @@ func Tcflush(fd, which uintptr) error {
 	default:
 		return unix.EINVAL
 	}
-	return ioctl(fd, unix.TIOCFLUSH, uintptr(unsafe.Pointer(&com)))
+	return unix.IoctlSetPointerInt(int(fd), unix.TIOCFLUSH, com)
 }
 
 // Cfgetispeed returns the input baud rate stored in the termios structure.
@@ -80,12 +79,11 @@ func Cfgetispeed(attr *unix.Termios) uint32 { return uint32(attr.Ispeed) }
 func Cfgetospeed(attr *unix.Termios) uint32 { return uint32(attr.Ospeed) }
 
 // Tiocinq returns the number of bytes in the input buffer.
-func Tiocinq(fd uintptr, argp *int) error {
-	*argp = 0
-	return nil
+func Tiocinq(fd uintptr) (int, error) {
+	return 0, nil
 }
 
 // Tiocoutq return the number of bytes in the output buffer.
-func Tiocoutq(fd uintptr, argp *int) error {
-	return ioctl(fd, unix.TIOCOUTQ, uintptr(unsafe.Pointer(argp)))
+func Tiocoutq(fd uintptr) (int, error) {
+	return unix.IoctlGetInt(int(fd), unix.TIOCOUTQ)
 }

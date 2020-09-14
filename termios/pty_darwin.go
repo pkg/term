@@ -28,9 +28,9 @@ func Ptsname(fd uintptr) (string, error) {
 }
 
 func grantpt(fd uintptr) error {
-	return ioctl(fd, unix.TIOCPTYGRANT, 0)
+	return unix.IoctlSetInt(int(fd), unix.TIOCPTYGRANT, 0)
 }
 
 func unlockpt(fd uintptr) error {
-	return ioctl(fd, unix.TIOCPTYUNLK, 0)
+	return unix.IoctlSetInt(int(fd), unix.TIOCPTYUNLK, 0)
 }
