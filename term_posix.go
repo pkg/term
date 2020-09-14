@@ -70,7 +70,7 @@ func (t *Term) setSpeed(baud int) error {
 // GetSpeed gets the current output baud rate.
 func (t *Term) GetSpeed() (int, error) {
 	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
 		return 0, err
 	}
 	return a.getSpeed()

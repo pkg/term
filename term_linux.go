@@ -10,102 +10,102 @@ const (
 	// package.  Many of these values will be redundant, but
 	// this long definition ensures we are portable if some
 	// architecture defines different values for them (unlikely).
-	CBaudMask = syscall.B50 |
-		syscall.B75 |
-		syscall.B110 |
-		syscall.B134 |
-		syscall.B150 |
-		syscall.B200 |
-		syscall.B300 |
-		syscall.B600 |
-		syscall.B1200 |
-		syscall.B1800 |
-		syscall.B2400 |
-		syscall.B4800 |
-		syscall.B9600 |
-		syscall.B19200 |
-		syscall.B38400 |
-		syscall.B57600 |
-		syscall.B115200 |
-		syscall.B230400 |
-		syscall.B460800 |
-		syscall.B500000 |
-		syscall.B576000 |
-		syscall.B921600 |
-		syscall.B1000000 |
-		syscall.B1152000 |
-		syscall.B1500000 |
-		syscall.B2000000 |
-		syscall.B2500000 |
-		syscall.B3000000 |
-		syscall.B3500000 |
-		syscall.B4000000
+	CBaudMask = unix.B50 |
+		unix.B75 |
+		unix.B110 |
+		unix.B134 |
+		unix.B150 |
+		unix.B200 |
+		unix.B300 |
+		unix.B600 |
+		unix.B1200 |
+		unix.B1800 |
+		unix.B2400 |
+		unix.B4800 |
+		unix.B9600 |
+		unix.B19200 |
+		unix.B38400 |
+		unix.B57600 |
+		unix.B115200 |
+		unix.B230400 |
+		unix.B460800 |
+		unix.B500000 |
+		unix.B576000 |
+		unix.B921600 |
+		unix.B1000000 |
+		unix.B1152000 |
+		unix.B1500000 |
+		unix.B2000000 |
+		unix.B2500000 |
+		unix.B3000000 |
+		unix.B3500000 |
+		unix.B4000000
 )
 
 func (a *attr) getSpeed() (int, error) {
 	switch a.Cflag & CBaudMask {
-	case syscall.B50:
+	case unix.B50:
 		return 50, nil
-	case syscall.B75:
+	case unix.B75:
 		return 75, nil
-	case syscall.B110:
+	case unix.B110:
 		return 110, nil
-	case syscall.B134:
+	case unix.B134:
 		return 134, nil
-	case syscall.B150:
+	case unix.B150:
 		return 150, nil
-	case syscall.B200:
+	case unix.B200:
 		return 200, nil
-	case syscall.B300:
+	case unix.B300:
 		return 300, nil
-	case syscall.B600:
+	case unix.B600:
 		return 600, nil
-	case syscall.B1200:
+	case unix.B1200:
 		return 1200, nil
-	case syscall.B1800:
+	case unix.B1800:
 		return 1800, nil
-	case syscall.B2400:
+	case unix.B2400:
 		return 2400, nil
-	case syscall.B4800:
+	case unix.B4800:
 		return 4800, nil
-	case syscall.B9600:
+	case unix.B9600:
 		return 9600, nil
-	case syscall.B19200:
+	case unix.B19200:
 		return 19200, nil
-	case syscall.B38400:
+	case unix.B38400:
 		return 38400, nil
-	case syscall.B57600:
+	case unix.B57600:
 		return 57600, nil
-	case syscall.B115200:
+	case unix.B115200:
 		return 115200, nil
-	case syscall.B230400:
+	case unix.B230400:
 		return 230400, nil
-	case syscall.B460800:
+	case unix.B460800:
 		return 460800, nil
-	case syscall.B500000:
+	case unix.B500000:
 		return 500000, nil
-	case syscall.B576000:
+	case unix.B576000:
 		return 576000, nil
-	case syscall.B921600:
+	case unix.B921600:
 		return 921600, nil
-	case syscall.B1000000:
+	case unix.B1000000:
 		return 1000000, nil
-	case syscall.B1152000:
+	case unix.B1152000:
 		return 1152000, nil
-	case syscall.B1500000:
+	case unix.B1500000:
 		return 1500000, nil
-	case syscall.B2000000:
+	case unix.B2000000:
 		return 2000000, nil
-	case syscall.B2500000:
+	case unix.B2500000:
 		return 2500000, nil
-	case syscall.B3000000:
+	case unix.B3000000:
 		return 3000000, nil
-	case syscall.B3500000:
+	case unix.B3500000:
 		return 3500000, nil
-	case syscall.B4000000:
+	case unix.B4000000:
 		return 4000000, nil
 	default:
-		return 0, syscall.EINVAL
+		return 0, unix.EINVAL
 	}
 }
 
