@@ -159,16 +159,15 @@ func (t *Term) SendBreak() error {
 func (t *Term) SetDTR(v bool) error {
 	bits := unix.TIOCM_DTR
 	if v {
-		return termios.Tiocmbis(uintptr(t.fd), &bits)
+		return termios.Tiocmbis(uintptr(t.fd), bits)
 	} else {
-		return termios.Tiocmbic(uintptr(t.fd), &bits)
+		return termios.Tiocmbic(uintptr(t.fd), bits)
 	}
 }
 
 // DTR returns the state of the DTR (data terminal ready) signal.
 func (t *Term) DTR() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
+	status, err := termios.Tiocmget(uintptr(t.fd))
 	return status&unix.TIOCM_DTR == unix.TIOCM_DTR, err
 }
 
@@ -176,16 +175,15 @@ func (t *Term) DTR() (bool, error) {
 func (t *Term) SetRTS(v bool) error {
 	bits := unix.TIOCM_RTS
 	if v {
-		return termios.Tiocmbis(uintptr(t.fd), &bits)
+		return termios.Tiocmbis(uintptr(t.fd), bits)
 	} else {
-		return termios.Tiocmbic(uintptr(t.fd), &bits)
+		return termios.Tiocmbic(uintptr(t.fd), bits)
 	}
 }
 
 // RTS returns the state of the RTS (data terminal ready) signal.
 func (t *Term) RTS() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
+	status, err := termios.Tiocmget(uintptr(t.fd))
 	return status&unix.TIOCM_RTS == unix.TIOCM_RTS, err
 }
 
