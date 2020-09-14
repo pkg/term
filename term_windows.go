@@ -2,11 +2,6 @@ package term
 
 import (
 	"errors"
-	"io"
-	"os"
-
-	"github.com/pkg/term/termios"
-	"golang.org/x/sys/unix"
 )
 
 type Term struct {
@@ -21,152 +16,90 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 
 // SetOption takes one or more option function and applies them in order to Term.
 func (t *Term) SetOption(options ...func(*Term) error) error {
-	for _, opt := range options {
-		if err := opt(t); err != nil {
-			return err
-		}
-	}
-	return nil
+	return errNotSupported
 }
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
 // bytes read and an error, if any. EOF is signaled by a zero count with
 // err set to io.EOF.
 func (t *Term) Read(b []byte) (int, error) {
-	n, e := unix.Read(t.fd, b)
-	if n < 0 {
-		n = 0
-	}
-	if n == 0 && len(b) > 0 && e == nil {
-		return 0, io.EOF
-	}
-	if e != nil {
-		return n, &os.PathError{"read", t.name, e}
-	}
-	return n, nil
+	return 0, errNotSupported
 }
 
 // Write writes len(b) bytes to the terminal. It returns the number of bytes
 // written and an error, if any. Write returns a non-nil error when n !=
 // len(b).
 func (t *Term) Write(b []byte) (int, error) {
-	n, e := unix.Write(t.fd, b)
-	if n < 0 {
-		n = 0
-	}
-	if n != len(b) {
-		return n, io.ErrShortWrite
-	}
-	if e != nil {
-		return n, &os.PathError{"write", t.name, e}
-	}
-	return n, nil
+	return 0, errNotSupported
 }
 
 // Close closes the device and releases any associated resources.
 func (t *Term) Close() error {
-	err := unix.Close(t.fd)
-	t.fd = -1
-	return err
+	return errNotSupported
 }
 
 // SetCbreak sets cbreak mode.
 func (t *Term) SetCbreak() error {
-	return t.SetOption(CBreakMode)
+	return errNotSupported
 }
 
 // CBreakMode places the terminal into cbreak mode.
 func CBreakMode(t *Term) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
-		return err
-	}
-	termios.Cfmakecbreak((*unix.Termios)(&a))
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	return errNotSupported
 }
 
 // SetRaw sets raw mode.
 func (t *Term) SetRaw() error {
-	return t.SetOption(RawMode)
+	return errNotSupported
 }
 
 // RawMode places the terminal into raw mode.
 func RawMode(t *Term) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
-		return err
-	}
-	termios.Cfmakeraw((*unix.Termios)(&a))
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	return errNotSupported
 }
 
 // Speed sets the baud rate option for the terminal.
 func Speed(baud int) func(*Term) error {
-	return func(t *Term) error {
-		return t.setSpeed(baud)
-	}
+	return func(*Term) error { return errNotSupported }
 }
 
 // SetSpeed sets the receive and transmit baud rates.
 func (t *Term) SetSpeed(baud int) error {
-	return t.SetOption(Speed(baud))
-}
-
-func (t *Term) setSpeed(baud int) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
-		return err
-	}
-	a.setSpeed(baud)
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	return errNotSupported
 }
 
 // Flush flushes both data received but not read, and data written but not transmitted.
 func (t *Term) Flush() error {
-	return termios.Tcflush(uintptr(t.fd), termios.TCIOFLUSH)
+	return errNotSupported
 }
 
 // SendBreak sends a break signal.
 func (t *Term) SendBreak() error {
-	return termios.Tcsendbreak(uintptr(t.fd), 0)
+	return errNotSupported
 }
 
 // SetDTR sets the DTR (data terminal ready) signal.
 func (t *Term) SetDTR(v bool) error {
-	bits := unix.TIOCM_DTR
-	if v {
-		return termios.Tiocmbis(uintptr(t.fd), &bits)
-	} else {
-		return termios.Tiocmbic(uintptr(t.fd), &bits)
-	}
+	return errNotSupported
 }
 
 // DTR returns the state of the DTR (data terminal ready) signal.
 func (t *Term) DTR() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&unix.TIOCM_DTR == unix.TIOCM_DTR, err
+	return false, errNotSupported
 }
 
 // SetRTS sets the RTS (data terminal ready) signal.
 func (t *Term) SetRTS(v bool) error {
-	bits := unix.TIOCM_RTS
-	if v {
-		return termios.Tiocmbis(uintptr(t.fd), &bits)
-	} else {
-		return termios.Tiocmbic(uintptr(t.fd), &bits)
-	}
+	return errNotSupported
 }
 
 // RTS returns the state of the RTS (data terminal ready) signal.
 func (t *Term) RTS() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&unix.TIOCM_RTS == unix.TIOCM_RTS, err
+	return false, errNotSupported
 }
 
 // Restore restores the state of the terminal captured at the point that
 // the terminal was originally opened.
 func (t *Term) Restore() error {
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCIOFLUSH, &t.orig)
+	return errNotSupported
 }
