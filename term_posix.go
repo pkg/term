@@ -196,6 +196,12 @@ func (t *Term) RTS() (bool, error) {
 	return status&unix.TIOCM_RTS == unix.TIOCM_RTS, err
 }
 
+// CTS returns the state of the CTS (clear to send) signal.
+func (t *Term) CTS() (bool, error) {
+	status, err := termios.Tiocmget(uintptr(t.fd))
+	return status&unix.TIOCM_CTS == unix.TIOCM_CTS, err
+}
+
 // Close closes the device and releases any associated resources.
 func (t *Term) Close() error {
 	err := unix.Close(t.fd)
