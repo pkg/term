@@ -63,14 +63,13 @@ func Tcflush(fd, selector uintptr) error {
 }
 
 // Tiocinq returns the number of bytes in the input buffer.
-func Tiocinq(fd uintptr, argp *int) (err error) {
-	*argp, err = unix.IoctlGetInt(int(fd), FIORDCHK)
-	return err
+func Tiocinq(fd uintptr) (int, error) {
+	return unix.IoctlGetInt(int(fd), FIORDCHK)
 }
 
 // Tiocoutq return the number of bytes in the output buffer.
-func Tiocoutq(fd uintptr, argp *int) error {
-	return ioctl(fd, unix.TIOCOUTQ, uintptr(unsafe.Pointer(argp)))
+func Tiocoutq(fd uintptr) (int, error) {
+	return unix.IoctlGetInt(int(fd), unix.TIOCOUTQ)
 }
 
 // Cfgetispeed returns the input baud rate stored in the termios structure.
