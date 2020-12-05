@@ -12,7 +12,7 @@ func open_pty_master() (uintptr, error) {
 }
 
 func Ptsname(fd uintptr) (string, error) {
-	var n uintptr
+	var n uint32
 	err := ioctl(fd, unix.TIOCGPTN, uintptr(unsafe.Pointer(&n)))
 	if err != nil {
 		return "", err
