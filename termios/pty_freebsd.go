@@ -3,6 +3,8 @@ package termios
 import (
 	"fmt"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 func posix_openpt(oflag int) (fd uintptr, err error) {
