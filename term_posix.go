@@ -17,13 +17,13 @@ type Term struct {
 }
 
 // SetAttr returns an option function which will apply the provided modifier to
-// a syscall.Termios before using that syscall.Termios to set the state of the
+// a unix.Termios before using that unix.Termios to set the state of the
 // Term. This allows a developer to manually set attributes for the terminal.
 // Here's an example case to set a terminal into raw mode, but then re-enable
 // the 'opost' attribute:
 //
-//     func EnableOutputPostprocess(a *syscall.Termios) uintptr {
-//         a.Oflag |= syscall.OPOST
+//     func EnableOutputPostprocess(a *unix.Termios) uintptr {
+//         a.Oflag |= unix.OPOST
 //         return termios.TCSANOW
 //     }
 //
@@ -32,14 +32,14 @@ type Term struct {
 //         t.SetRaw()
 //         t.SetOption(term.SetAttr(EnableOutputPostprocess))
 //     }
-func SetAttr(modifier func(*syscall.Termios) uintptr) func(*Term) error {
+func SetAttr(modifier func(*unix.Termios) uintptr) func(*Term) error {
 	return func(t *Term) error {
-		var a syscall.Termios
-		if err := termios.Tcgetattr(uintptr(t.fd), (*syscall.Termios)(&a)); err != nil {
+		var a unix.Termios
+		if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
 			return err
 		}
-		action := modifier((*syscall.Termios)(&a))
-		return termios.Tcsetattr(uintptr(t.fd), action, (*syscall.Termios)(&a))
+		action := modifier((*unix.Termios)(&a))
+		return termios.Tcsetattr(uintptr(t.fd), action, (*unix.Termios)(&a))
 	}
 }
 
@@ -193,9 +193,8 @@ func (t *Term) SendBreak() error {
 
 // DCD returns the state of the DCD (data carrier detect) signal.
 func (t *Term) DCD() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&syscall.TIOCM_CD == syscall.TIOCM_CD, err
+	status, err := termios.Tiocmget(uintptr(t.fd))
+	return status&unix.TIOCM_CD == unix.TIOCM_CD, err
 }
 
 // SetDTR sets the DTR (data terminal ready) signal.
@@ -216,9 +215,8 @@ func (t *Term) DTR() (bool, error) {
 
 // DSR returns the state of the DSR (data set ready) signal.
 func (t *Term) DSR() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&syscall.TIOCM_DSR == syscall.TIOCM_DSR, err
+	status, err := termios.Tiocmget(uintptr(t.fd))
+	return status&unix.TIOCM_DSR == unix.TIOCM_DSR, err
 }
 
 // SetRTS sets the RTS (data terminal ready) signal.
@@ -243,18 +241,10 @@ func (t *Term) CTS() (bool, error) {
 	return status&unix.TIOCM_CTS == unix.TIOCM_CTS, err
 }
 
-// CTS returns the state of the CTS (clear to send) signal.
-func (t *Term) CTS() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&syscall.TIOCM_CTS == syscall.TIOCM_CTS, err
-}
-
 // RI returns the state of the RI (ring indicator) signal.
 func (t *Term) RI() (bool, error) {
-	var status int
-	err := termios.Tiocmget(uintptr(t.fd), &status)
-	return status&syscall.TIOCM_RI == syscall.TIOCM_RI, err
+	status, err := termios.Tiocmget(uintptr(t.fd))
+	return status&unix.TIOCM_RI == unix.TIOCM_RI, err
 }
 
 // Close closes the device and releases any associated resources.
