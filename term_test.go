@@ -19,6 +19,7 @@ var _ interface {
 	DTR() (bool, error)
 	Flush() error
 	RTS() (bool, error)
+	CTS() (bool, error)
 	Read(b []byte) (int, error)
 	Restore() error
 	SendBreak() error
