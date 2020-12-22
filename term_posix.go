@@ -164,6 +164,13 @@ func (t *Term) SendBreak() error {
 	return termios.Tcsendbreak(uintptr(t.fd), 0)
 }
 
+// DCD returns the state of the DCD (data carrier detect) signal.
+func (t *Term) DCD() (bool, error) {
+	var status int
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_CD == syscall.TIOCM_CD, err
+}
+
 // SetDTR sets the DTR (data terminal ready) signal.
 func (t *Term) SetDTR(v bool) error {
 	bits := unix.TIOCM_DTR
@@ -180,6 +187,13 @@ func (t *Term) DTR() (bool, error) {
 	return status&unix.TIOCM_DTR == unix.TIOCM_DTR, err
 }
 
+// DSR returns the state of the DSR (data set ready) signal.
+func (t *Term) DSR() (bool, error) {
+	var status int
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_DSR == syscall.TIOCM_DSR, err
+}
+
 // SetRTS sets the RTS (data terminal ready) signal.
 func (t *Term) SetRTS(v bool) error {
 	bits := unix.TIOCM_RTS
@@ -190,7 +204,7 @@ func (t *Term) SetRTS(v bool) error {
 	}
 }
 
-// RTS returns the state of the RTS (data terminal ready) signal.
+// RTS returns the state of the RTS (request to send) signal.
 func (t *Term) RTS() (bool, error) {
 	status, err := termios.Tiocmget(uintptr(t.fd))
 	return status&unix.TIOCM_RTS == unix.TIOCM_RTS, err
@@ -200,6 +214,20 @@ func (t *Term) RTS() (bool, error) {
 func (t *Term) CTS() (bool, error) {
 	status, err := termios.Tiocmget(uintptr(t.fd))
 	return status&unix.TIOCM_CTS == unix.TIOCM_CTS, err
+}
+
+// CTS returns the state of the CTS (clear to send) signal.
+func (t *Term) CTS() (bool, error) {
+	var status int
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_CTS == syscall.TIOCM_CTS, err
+}
+
+// RI returns the state of the RI (ring indicator) signal.
+func (t *Term) RI() (bool, error) {
+	var status int
+	err := termios.Tiocmget(uintptr(t.fd), &status)
+	return status&syscall.TIOCM_RI == syscall.TIOCM_RI, err
 }
 
 // Close closes the device and releases any associated resources.
