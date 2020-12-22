@@ -1,20 +1,6 @@
 on: [push, pull_request]
 name: Test
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [darwin, linux, freebsd, netbsd, openbsd, solaris]
-    steps:
-    - name: Install Go
-      uses: actions/setup-go@v2
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Build 
-      env:
-        GOOS: {{ matrix.goos }}
-      run: go build ./...
   test:
     strategy:
       matrix:
