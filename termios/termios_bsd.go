@@ -55,22 +55,7 @@ func Tcdrain(fd uintptr) error {
 
 // Tcflush discards data written to the object referred to by fd but not transmitted, or data received but not read, depending on the value of which.
 func Tcflush(fd, which uintptr) error {
-	const (
-		FREAD  = 0x0001
-		FWRITE = 0x0002
-	)
-	var com int
-	switch which {
-	case unix.TCIFLUSH:
-		com = FREAD
-	case unix.TCOFLUSH:
-		com = FWRITE
-	case unix.TCIOFLUSH:
-		com = FREAD | FWRITE
-	default:
-		return unix.EINVAL
-	}
-	return unix.IoctlSetPointerInt(int(fd), unix.TIOCFLUSH, com)
+	return unix.IoctlSetPointerInt(int(fd), unix.TIOCFLUSH, int(which))
 }
 
 // Cfgetispeed returns the input baud rate stored in the termios structure.
