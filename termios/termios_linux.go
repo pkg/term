@@ -53,7 +53,7 @@ func Tcdrain(fd uintptr) error {
 
 // Tcflush discards data written to the object referred to by fd but not transmitted, or data received but not read, depending on the value of selector.
 func Tcflush(fd, selector uintptr) error {
-	unix.IoctlSetInt(int(fd), unix.TCFLSH, int(selector))
+	return unix.IoctlSetInt(int(fd), unix.TCFLSH, int(selector))
 }
 
 // Tiocinq returns the number of bytes in the input buffer.
