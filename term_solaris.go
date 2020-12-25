@@ -1,8 +1,5 @@
 package term
 
-// #include<stropts.h>
-import "C"
-
 import (
 	"os"
 	"syscall"
@@ -128,6 +125,14 @@ func (a *attr) setSpeed(baud int) error {
 
 // Open opens an asynchronous communications port.
 func Open(name string, options ...func(*Term) error) (*Term, error) {
+
+	// copied from https://github.com/kofemann/opensolaris/blob/master/usr/src/uts/common/sys/stropts.h#L229
+	// to avoid cgo dependency.
+	const (
+		STR    = ('S' << 8)
+		I_PUSH = (STR | 02)
+	)
+
 	fd, e := unix.Open(name, unix.O_NOCTTY|unix.O_CLOEXEC|unix.O_NDELAY|unix.O_RDWR, 0666)
 	if e != nil {
 		return nil, &os.PathError{"open", name, e}
@@ -135,7 +140,7 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 
 	modules := [2]string{"ptem", "ldterm"}
 	for _, mod := range modules {
-		err := unix.IoctlSetInt(fd, C.I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(mod)))))
+		err := unix.IoctlSetInt(fd, I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(mod)))))
 		if err != nil {
 			return nil, err
 		}
