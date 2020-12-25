@@ -67,11 +67,6 @@ func Tiocinq(fd uintptr) (int, error) {
 	return unix.IoctlGetInt(int(fd), FIORDCHK)
 }
 
-// Tiocoutq return the number of bytes in the output buffer.
-func Tiocoutq(fd uintptr) (int, error) {
-	return unix.IoctlGetInt(int(fd), unix.TIOCOUTQ)
-}
-
 // Cfgetispeed returns the input baud rate stored in the termios structure.
 func Cfgetispeed(attr *unix.Termios) uint32 {
 	solTermios := tiosToUnix(attr)
