@@ -3,15 +3,12 @@
 package termios
 
 import (
-	"flag"
 	"os"
 	"runtime"
 	"testing"
 
 	"golang.org/x/sys/unix"
 )
-
-var dev = flag.String("device", "/dev/tty", "device to use")
 
 func TestTcgetattr(t *testing.T) {
 	f := opendev(t)
