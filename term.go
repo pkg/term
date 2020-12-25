@@ -6,7 +6,6 @@
 package term
 
 import (
-	"errors"
 	"io"
 	"os"
 
@@ -19,8 +18,6 @@ const (
 	XONXOFF         // software flow control
 	HARDWARE        // hardware flow control
 )
-
-var errNotSupported = errors.New("not supported")
 
 // Read reads up to len(b) bytes from the terminal. It returns the number of
 // bytes read and an error, if any. EOF is signaled by a zero count with
