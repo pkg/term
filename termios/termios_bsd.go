@@ -43,7 +43,7 @@ func Tcsetattr(fd, opt uintptr, argp *unix.Termios) error {
 // Tcsendbreak function transmits a continuous stream of zero-valued bits for
 // four-tenths of a second to the terminal referenced by fildes. The duration
 // parameter is ignored in this implementation.
-func Tcsendbreak(fd, duration uintptr) error {
+func Tcsendbreak(fd uintptr, duration int) error {
 	if err := unix.IoctlSetInt(int(fd), unix.TIOCSBRK, 0); err != nil {
 		return err
 	}

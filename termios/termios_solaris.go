@@ -43,8 +43,8 @@ func Tcsetattr(fd, action uintptr, argp *unix.Termios) error {
 // duration is zero, it transmits zero-valued bits for at least 0.25 seconds, and not more that 0.5 seconds.
 // If duration is not zero, it sends zero-valued bits for some
 // implementation-defined length of time.
-func Tcsendbreak(fd, duration uintptr) error {
-	return ioctl(fd, TCSBRKP, duration)
+func Tcsendbreak(fd uintptr, duration int) error {
+	return ioctl(fd, TCSBRKP, uintptr(duration))
 }
 
 // Tcdrain waits until all output written to the object referred to by fd has been transmitted.

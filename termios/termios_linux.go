@@ -5,13 +5,6 @@ import (
 )
 
 const (
-	TCSETS  = unix.TCSETS
-	TCSETSW = unix.TCSETSW
-	TCSETSF = unix.TCSETSF
-	TCFLSH  = unix.TCFLSH
-	TCSBRK  = unix.TCSBRK
-	TCSBRKP = unix.TCSBRKP
-
 	IXON    = 0x00000400
 	IXANY   = 0x00000800
 	IXOFF   = 0x00001000
@@ -28,11 +21,11 @@ func Tcsetattr(fd, action uintptr, argp *unix.Termios) error {
 	var request uintptr
 	switch action {
 	case TCSANOW:
-		request = TCSETS
+		request = unix.TCSETS
 	case TCSADRAIN:
-		request = TCSETSW
+		request = unix.TCSETSW
 	case TCSAFLUSH:
-		request = TCSETSF
+		request = unix.TCSETSF
 	default:
 		return unix.EINVAL
 	}
@@ -44,8 +37,8 @@ func Tcsetattr(fd, action uintptr, argp *unix.Termios) error {
 // duration is zero, it transmits zero-valued bits for at least 0.25 seconds, and not more that 0.5 seconds.
 // If duration is not zero, it sends zero-valued bits for some
 // implementation-defined length of time.
-func Tcsendbreak(fd, duration uintptr) error {
-	return ioctl(fd, TCSBRKP, duration)
+func Tcsendbreak(fd uintptr, duration int) error {
+	return unix.IoctlSetInt(int(fd), unix.TCSBRKP, duration)
 }
 
 // Tcdrain waits until all output written to the object referred to by fd has been transmitted.
@@ -60,7 +53,7 @@ func Tcdrain(fd uintptr) error {
 
 // Tcflush discards data written to the object referred to by fd but not transmitted, or data received but not read, depending on the value of selector.
 func Tcflush(fd, selector uintptr) error {
-	return ioctl(fd, TCFLSH, selector)
+	return ioctl(fd, unix.TCFLSH, selector)
 }
 
 // Tiocinq returns the number of bytes in the input buffer.
