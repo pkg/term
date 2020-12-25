@@ -34,7 +34,10 @@ func (t *Term) Read(b []byte) (int, error) {
 		return 0, io.EOF
 	}
 	if e != nil {
-		return n, &os.PathError{"read", t.name, e}
+		return n, &os.PathError{
+			Op:   "read",
+			Path: t.name,
+			Err:  e}
 	}
 	return n, nil
 }
@@ -61,7 +64,11 @@ func (t *Term) Write(b []byte) (int, error) {
 		return n, io.ErrShortWrite
 	}
 	if e != nil {
-		return n, &os.PathError{"write", t.name, e}
+		return n, &os.PathError{
+			Op:   "write",
+			Path: t.name,
+			Err:  e,
+		}
 	}
 	return n, nil
 }
