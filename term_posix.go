@@ -34,12 +34,12 @@ type Term struct {
 //     }
 func SetAttr(modifier func(*unix.Termios) uintptr) func(*Term) error {
 	return func(t *Term) error {
-		var a unix.Termios
-		if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+		a, err := termios.Tcgetattr(uintptr(t.fd))
+		if err != nil {
 			return err
 		}
-		action := modifier((*unix.Termios)(&a))
-		return termios.Tcsetattr(uintptr(t.fd), action, (*unix.Termios)(&a))
+		action := modifier(a)
+		return termios.Tcsetattr(uintptr(t.fd), action, a)
 	}
 }
 
@@ -50,12 +50,12 @@ func (t *Term) SetCbreak() error {
 
 // CBreakMode places the terminal into cbreak mode.
 func CBreakMode(t *Term) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return err
 	}
-	termios.Cfmakecbreak((*unix.Termios)(&a))
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	termios.Cfmakecbreak(a)
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, a)
 }
 
 // SetRaw sets raw mode.
@@ -65,12 +65,12 @@ func (t *Term) SetRaw() error {
 
 // RawMode places the terminal into raw mode.
 func RawMode(t *Term) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return err
 	}
-	termios.Cfmakeraw((*unix.Termios)(&a))
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	termios.Cfmakeraw(a)
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, a)
 }
 
 // Speed sets the baud rate option for the terminal.
@@ -86,21 +86,21 @@ func (t *Term) SetSpeed(baud int) error {
 }
 
 func (t *Term) setSpeed(baud int) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return err
 	}
-	a.setSpeed(baud)
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	(*attr)(a).setSpeed(baud)
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, a)
 }
 
 // GetSpeed gets the current output baud rate.
 func (t *Term) GetSpeed() (int, error) {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return 0, err
 	}
-	return a.getSpeed()
+	return (*attr)(a).getSpeed()
 }
 
 func clamp(v, lo, hi int64) int64 {
@@ -140,12 +140,12 @@ func (t *Term) SetReadTimeout(d time.Duration) error {
 }
 
 func (t *Term) setReadTimeout(d time.Duration) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return err
 	}
 	a.Cc[unix.VMIN], a.Cc[unix.VTIME] = timeoutVals(d)
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, a)
 }
 
 // FlowControl sets the flow control option for the terminal.
@@ -161,8 +161,8 @@ func (t *Term) SetFlowControl(kind int) error {
 }
 
 func (t *Term) setFlowControl(kind int) error {
-	var a attr
-	if err := termios.Tcgetattr(uintptr(t.fd), (*unix.Termios)(&a)); err != nil {
+	a, err := termios.Tcgetattr(uintptr(t.fd))
+	if err != nil {
 		return err
 	}
 	switch kind {
@@ -178,7 +178,7 @@ func (t *Term) setFlowControl(kind int) error {
 		a.Iflag &^= termios.IXON | termios.IXOFF | termios.IXANY
 		a.Cflag |= termios.CRTSCTS
 	}
-	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, (*unix.Termios)(&a))
+	return termios.Tcsetattr(uintptr(t.fd), termios.TCSANOW, a)
 }
 
 // Flush flushes both data received but not read, and data written but not transmitted.

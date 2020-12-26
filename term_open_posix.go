@@ -20,10 +20,11 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 		}
 	}
 
-	t := Term{name: name, fd: fd}
-	if err := termios.Tcgetattr(uintptr(t.fd), &t.orig); err != nil {
+	orig, err := termios.Tcgetattr(uintptr(fd))
+	if err != nil {
 		return nil, err
 	}
+	t := Term{name: name, fd: fd, orig: *orig}
 	if err := t.SetOption(options...); err != nil {
 		return nil, err
 	}
