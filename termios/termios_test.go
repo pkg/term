@@ -12,7 +12,6 @@ import (
 
 func TestTcgetattr(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if _, err := Tcgetattr(f.Fd()); err != nil {
 		t.Fatal(err)
@@ -21,7 +20,6 @@ func TestTcgetattr(t *testing.T) {
 
 func TestTcsetattr(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	termios, err := Tcgetattr(f.Fd())
 	if err != nil {
@@ -36,7 +34,6 @@ func TestTcsetattr(t *testing.T) {
 
 func TestTcsendbreak(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if err := Tcsendbreak(f.Fd(), 0); err != nil {
 		t.Fatal(err)
@@ -45,7 +42,6 @@ func TestTcsendbreak(t *testing.T) {
 
 func TestTcdrain(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if err := Tcdrain(f.Fd()); err != nil {
 		t.Fatal(err)
@@ -54,7 +50,6 @@ func TestTcdrain(t *testing.T) {
 
 func TestTiocmget(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if _, err := Tiocmget(f.Fd()); err != nil {
 		checktty(t, err)
@@ -64,7 +59,6 @@ func TestTiocmget(t *testing.T) {
 
 func TestTiocmset(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	status, err := Tiocmget(f.Fd())
 	if err != nil {
@@ -79,7 +73,6 @@ func TestTiocmset(t *testing.T) {
 
 func TestTiocmbis(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if err := Tiocmbis(f.Fd(), 0); err != nil {
 		checktty(t, err)
@@ -89,7 +82,6 @@ func TestTiocmbis(t *testing.T) {
 
 func TestTiocmbic(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	if err := Tiocmbic(f.Fd(), 0); err != nil {
 		checktty(t, err)
@@ -99,7 +91,6 @@ func TestTiocmbic(t *testing.T) {
 
 func TestTiocinq(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	inq, err := Tiocinq(f.Fd())
 	if err != nil {
@@ -112,7 +103,6 @@ func TestTiocinq(t *testing.T) {
 
 func TestTiocoutq(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	inq, err := Tiocoutq(f.Fd())
 	if err != nil {
@@ -125,7 +115,6 @@ func TestTiocoutq(t *testing.T) {
 
 func TestCfgetispeed(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	termios, err := Tcgetattr(f.Fd())
 	if err != nil {
@@ -138,7 +127,6 @@ func TestCfgetispeed(t *testing.T) {
 
 func TestCfgetospeed(t *testing.T) {
 	f := opendev(t)
-	defer f.Close()
 
 	termios, err := Tcgetattr(f.Fd())
 	if err != nil {
@@ -154,11 +142,14 @@ func opendev(t *testing.T) *os.File {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() {
+		pts.Close()
+	})
 	return pts
 }
 
 func checktty(t *testing.T, err error) {
-
+	t.Helper()
 	// some ioctls fail against char devices if they do not
 	// support a particular feature
 	if (runtime.GOOS == "darwin" && err == unix.ENOTTY) || (runtime.GOOS == "linux" && err == unix.EINVAL) {
