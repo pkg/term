@@ -23,10 +23,8 @@ const (
 )
 
 // Tcgetattr gets the current serial port settings.
-func Tcgetattr(fd uintptr, argp *unix.Termios) error {
-	termios, err := unix.IoctlGetTermios(int(fd), unix.TCGETS)
-	*argp = *(tiosTounix(termios))
-	return err
+func Tcgetattr(fd uintptr) (*unix.Termios, error) {
+	return unix.IoctlGetTermios(int(fd), unix.TCGETS)
 }
 
 // Tcsetattr sets the current serial port settings.

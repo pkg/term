@@ -14,8 +14,7 @@ func TestTcgetattr(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios unix.Termios
-	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+	if _, err := Tcgetattr(f.Fd()); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -24,12 +23,12 @@ func TestTcsetattr(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios unix.Termios
-	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+	termios, err := Tcgetattr(f.Fd())
+	if err != nil {
 		t.Fatal(err)
 	}
 	for _, opt := range []uintptr{TCSANOW, TCSADRAIN, TCSAFLUSH} {
-		if err := Tcsetattr(f.Fd(), opt, &termios); err != nil {
+		if err := Tcsetattr(f.Fd(), opt, termios); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -128,11 +127,11 @@ func TestCfgetispeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios unix.Termios
-	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+	termios, err := Tcgetattr(f.Fd())
+	if err != nil {
 		t.Fatal(err)
 	}
-	if baud := Cfgetispeed(&termios); baud == 0 && runtime.GOOS != "linux" {
+	if baud := Cfgetispeed(termios); baud == 0 && runtime.GOOS != "linux" {
 		t.Fatalf("Cfgetispeed: expected > 0, got %v", baud)
 	}
 }
@@ -141,11 +140,11 @@ func TestCfgetospeed(t *testing.T) {
 	f := opendev(t)
 	defer f.Close()
 
-	var termios unix.Termios
-	if err := Tcgetattr(f.Fd(), &termios); err != nil {
+	termios, err := Tcgetattr(f.Fd())
+	if err != nil {
 		t.Fatal(err)
 	}
-	if baud := Cfgetospeed(&termios); baud == 0 && runtime.GOOS != "linux" {
+	if baud := Cfgetospeed(termios); baud == 0 && runtime.GOOS != "linux" {
 		t.Fatalf("Cfgetospeed: expected > 0, got %v", baud)
 	}
 }
