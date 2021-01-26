@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/pkg/term/termios"
+	"golang.org/x/sys/unix"
 )
 
 // assert that Term implements the same method set across
@@ -63,6 +64,14 @@ func TestTermSetSpeed(t *testing.T) {
 		t.Fatal(err)
 	} else if spd != 57600 {
 		t.Errorf("speed mismatch %d != 57600", spd)
+	}
+}
+
+func TestTermSetInvalidSpeed(t *testing.T) {
+	tt := opendev(t)
+	defer tt.Close()
+	if err := tt.SetSpeed(12345); err != unix.EINVAL {
+		t.Fatal(err)
 	}
 }
 
