@@ -22,13 +22,21 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 
 	orig, err := termios.Tcgetattr(uintptr(fd))
 	if err != nil {
+		unix.Close(fd)
 		return nil, err
 	}
 	t := Term{name: name, fd: fd, orig: *orig}
 	if err := t.SetOption(options...); err != nil {
+		unix.Close(fd)
 		return nil, err
 	}
-	return &t, unix.SetNonblock(t.fd, false)
+
+	if err := unix.SetNonblock(t.fd, false); err != nil {
+		unix.Close(fd)
+		return nil, err
+	}
+
+	return &t, nil
 }
 
 // Restore restores the state of the terminal captured at the point that
