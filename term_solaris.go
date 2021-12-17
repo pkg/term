@@ -142,21 +142,29 @@ func Open(name string, options ...func(*Term) error) (*Term, error) {
 	for _, mod := range modules {
 		err := unix.IoctlSetInt(fd, I_PUSH, int(uintptr(unsafe.Pointer(syscall.StringBytePtr(mod)))))
 		if err != nil {
+			unix.Close(fd)
 			return nil, err
 		}
 	}
 
 	orig, err := termios.Tcgetattr(uintptr(t.fd))
 	if err != nil {
+		unix.Close(fd)
 		return nil, err
 	}
 	t := Term{name: name, fd: fd, *orig}
 
 	if err := t.SetOption(options...); err != nil {
+		unix.Close(fd)
 		return nil, err
 	}
 
-	return &t, unix.SetNonblock(t.fd, false)
+	if err := unix.SetNonblock(t.fd, false); err != nil {
+		unix.Close(fd)
+		return nil, err
+	}
+
+	return &t, nil
 }
 
 // Restore restores the state of the terminal captured at the point that
