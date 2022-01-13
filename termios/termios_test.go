@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package termios
@@ -152,7 +153,7 @@ func checktty(t *testing.T, err error) {
 	t.Helper()
 	// some ioctls fail against char devices if they do not
 	// support a particular feature
-	if (runtime.GOOS == "darwin" && err == unix.ENOTTY) || (runtime.GOOS == "linux" && err == unix.EINVAL) {
+	if ((runtime.GOOS == "darwin" || runtime.GOOS == "linux") && err == unix.ENOTTY) || (runtime.GOOS == "linux" && err == unix.EINVAL) {
 		t.Skip(err)
 	}
 }
