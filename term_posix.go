@@ -191,6 +191,11 @@ func (t *Term) Flush() error {
 	return termios.Tcflush(uintptr(t.fd), termios.TCIOFLUSH)
 }
 
+// Drain waits until all output written to the term has been transmitted.
+func (t *Term) Drain() error {
+	return termios.Tcdrain(uintptr(t.fd))
+}
+
 // SendBreak sends a break signal.
 func (t *Term) SendBreak() error {
 	return termios.Tcsendbreak(uintptr(t.fd), 0)
