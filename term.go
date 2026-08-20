@@ -39,7 +39,7 @@ func (t *Term) Read(b []byte) (int, error) {
 	return n, nil
 }
 
-// SetOption takes one or more option function and applies them in order to Term.
+// SetOption takes one or more option functions and applies them in order to Term.
 func (t *Term) SetOption(options ...func(*Term) error) error {
 	for _, opt := range options {
 		if err := opt(t); err != nil {
