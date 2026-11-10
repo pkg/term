@@ -57,15 +57,15 @@ func (t *Term) Write(b []byte) (int, error) {
 	if n < 0 {
 		n = 0
 	}
-	if n != len(b) {
-		return n, io.ErrShortWrite
-	}
 	if e != nil {
 		return n, &os.PathError{
 			Op:   "write",
 			Path: t.name,
 			Err:  e,
 		}
+	}
+	if n != len(b) {
+		return n, io.ErrShortWrite
 	}
 	return n, nil
 }
